@@ -1,0 +1,5 @@
+.*.sw*
+*.properties
+build.xml
+bin
+gen
