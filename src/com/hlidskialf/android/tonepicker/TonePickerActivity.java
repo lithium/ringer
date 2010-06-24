@@ -86,7 +86,8 @@ class TonePickerAdapter extends BaseExpandableListAdapter {
   }
   public int getGroupCount()
   {
-    return LAST_BUILTIN_CURSOR + mMusicCache.size;
+    return LAST_BUILTIN_CURSOR + (mMusicCache != null ? mMusicCache.size : 0);
+    
   }
   public Object getGroup(int groupPosition)
   {
@@ -102,6 +103,8 @@ class TonePickerAdapter extends BaseExpandableListAdapter {
       convertView = new TextView(mContext);
     }
     TextView convert = (TextView)convertView;
+    convert.setHeight(32);
+    convert.setPadding(32,0,0,0);
 
     if (groupPosition == RING_CURSOR) convert.setText("Ringtones");
     else 
@@ -145,6 +148,8 @@ class TonePickerAdapter extends BaseExpandableListAdapter {
       convertView = new TextView(mContext);
     }
     TextView convert = (TextView)convertView;
+    convert.setHeight(32);
+    convert.setPadding(32,0,0,0);
     convert.setText(title);
     return convert;
   }
@@ -195,7 +200,6 @@ class TonePickerAdapter extends BaseExpandableListAdapter {
       Entry<String,ArrayList> e = (Entry)it.next();
       mMusicCache.album_names[i] = e.getKey();
       ArrayList tracks = (ArrayList)e.getValue();
-      //mMusicCache.album_tracks[i] = (String[])((ArrayList)e.getValue()).toArray();
       mMusicCache.album_tracks[i] = tracks.toArray();
     }
     mMusicCache.size = i;
