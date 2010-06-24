@@ -26,6 +26,7 @@ public class BragiActivity extends ListActivity
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.main);
 
+  /*
         mRingtoneManager = new RingtoneManager((Activity)this);
         mRingtoneManager.setType(RingtoneManager.TYPE_NOTIFICATION);
         mRingtoneCursor = mRingtoneManager.getCursor();
@@ -35,5 +36,6 @@ public class BragiActivity extends ListActivity
 
         mAdapter = new SimpleCursorAdapter((Context)this, R.layout.list_item, mRingtoneCursor, new String[] {"title"}, new int[] {android.R.id.text1});
         setListAdapter(mAdapter);
+*/
     }
 }
