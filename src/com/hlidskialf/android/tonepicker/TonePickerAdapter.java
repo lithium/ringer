@@ -2,6 +2,7 @@ package com.hlidskialf.android.tonepicker;
 
 
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -42,45 +43,61 @@ class MusicCache {
   }
 }
 
-class AppCache {
-  public Drawable icon; 
+
+abstract class BaseCache {
   public String name;
+
+  public View getView(Context context, View convertView, ViewGroup parent)
+  {
+    if (convertView == null) {
+      convertView = new TextView(context);
+    }
+    TextView convert = (TextView)convertView;
+    convert.setHeight(32);
+    convert.setPadding(32,0,0,0);
+    convert.setText(name);
+    return convert;
+  }
+}
+
+class AppCache extends BaseCache {
+  public Drawable icon; 
   public Intent intent;
+}
+class RingCache extends BaseCache {
+  public Uri uri;
+}
+class MediaCache extends BaseCache {
+  public Uri uri;
+}
+class DefaultCache extends BaseCache {
+  public DefaultCache(String new_name) { name = new_name; }
 }
 
 public class TonePickerAdapter extends BaseExpandableListAdapter {
   private Context mContext;
-  private RingtoneManager mRingManager, mNotifyManager, mAlarmManager;
-  private Cursor mRingCursor, mNotifyCursor, mAlarmCursor;
-  private Cursor[] mCursors;                               
   private Uri mExistingUri;                                
   private ComponentName mExcludeApp;
                                                            
-
-  private static final int BUILTIN_CURSOR_RING=0;
-  private static final int BUILTIN_CURSOR_NOTIFY=1;
-  private static final int BUILTIN_CURSOR_ALARM=2;
-  private static final int BUILTIN_CURSOR_COUNT=3;
   private static final String[] BUILTIN_NAMES = new String[] { "Ringtones","Notifications","Alarms", };
-  private String[] mDefaults;
+  private static final int INDEX_DEFAULTS=0;
+  private static final int INDEX_FIRST_BUILTIN=1;
+  private static final int INDEX_RINGTONES=1;
+  private static final int INDEX_NOTIFICATIONS=2;
+  private static final int INDEX_ALARMS=3;
+  private static final int INDEX_FIRST_ALBUM=4;
+  private static int INDEX_CONTENTS;
+  private static int INDEX_PICKERS;
 
-  private static final int mIndex_firstBuiltin=1;
-  private static int mIndex_firstAlbum;
-  private static int mIndex_firstContent;
-  private static int mIndex_firstPicker;
-
+  private Object[] mDefaults;
+  private Object[] mRingtoneCache;
+  private Object[] mNotifyCache;
+  private Object[] mAlarmCache;
   private MusicCache mMusicCache;
-
   private Object[] mContentIntents;
   private Object[] mPickerIntents;
 
 
-  static final String[] ALBUM_CURSOR_COLS = new String[] {
-    MediaStore.Audio.Media._ID,
-    MediaStore.Audio.Media.TITLE,
-    MediaStore.Audio.Media.ARTIST,
-    MediaStore.Audio.Media.ALBUM,
-  };
   
 
   public TonePickerAdapter(Context context, Uri existing_uri, ComponentName exclude_app)
@@ -89,23 +106,17 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     mExistingUri = existing_uri;
     mExcludeApp = exclude_app;
 
-    if (existing_uri == null)
-      mDefaults = new String[] {"Silence"};
-    else
-      mDefaults = new String[] {mExistingUri.toString(), "Silence"};
+    if (existing_uri == null) {
+      mDefaults = new DefaultCache[] { new DefaultCache("Silence") };
+    }
+    else {
+      mDefaults = new DefaultCache[] { new DefaultCache(mExistingUri.toString()), new DefaultCache("Silence") };
+    }
 
 
-    mCursors = new Cursor[BUILTIN_CURSOR_COUNT];
-    mRingManager = new RingtoneManager(context);
-    mRingManager.setType(RingtoneManager.TYPE_RINGTONE);
-    mCursors[BUILTIN_CURSOR_RING] = mRingManager.getCursor();
-    mNotifyManager = new RingtoneManager(context);
-    mNotifyManager.setType(RingtoneManager.TYPE_NOTIFICATION);
-    mCursors[BUILTIN_CURSOR_NOTIFY] = mNotifyManager.getCursor();
-    mAlarmManager = new RingtoneManager(context);
-    mAlarmManager.setType(RingtoneManager.TYPE_ALARM);
-    mCursors[BUILTIN_CURSOR_ALARM] = mAlarmManager.getCursor();
-
+    mRingtoneCache = _cache_builtins(RingtoneManager.TYPE_RINGTONE);
+    mNotifyCache = _cache_builtins(RingtoneManager.TYPE_NOTIFICATION);
+    mAlarmCache = _cache_builtins(RingtoneManager.TYPE_NOTIFICATION);
 
     _cache_album_names();
 
@@ -118,9 +129,9 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
     mPickerIntents = _cache_intents(intent);
 
-    mIndex_firstAlbum = 1+BUILTIN_CURSOR_COUNT;
-    mIndex_firstContent = mIndex_firstAlbum + mMusicCache.size();
-    mIndex_firstPicker = mIndex_firstContent+1;
+    INDEX_CONTENTS = INDEX_FIRST_ALBUM + mMusicCache.size();
+    INDEX_PICKERS = INDEX_CONTENTS+1;
+
   }
 
   public boolean isChildSelectable(int groupPosition, int childPosition) 
@@ -139,7 +150,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   }
   public int getGroupCount()
   {
-    int count = 1+BUILTIN_CURSOR_COUNT;
+    int count = INDEX_FIRST_ALBUM; //defaults + builtins
     if (mMusicCache != null)
       count += mMusicCache.size();
 
@@ -150,21 +161,27 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   public Object getGroup(int groupPosition)
   {
     /* note: high -> low */
-    if (groupPosition >= mIndex_firstPicker) 
+    if (groupPosition == INDEX_PICKERS) 
       return mPickerIntents;
 
-    if (groupPosition >= mIndex_firstContent) 
+    if (groupPosition == INDEX_CONTENTS) 
       return mContentIntents;
 
-    if (groupPosition >= mIndex_firstAlbum) {
-      return mMusicCache.objects[groupPosition - mIndex_firstAlbum];
+    if (groupPosition >= INDEX_FIRST_ALBUM) {
+      return mMusicCache.objects[groupPosition - INDEX_FIRST_ALBUM];
     }
 
-    if (groupPosition >= mIndex_firstBuiltin) {
-      return mCursors[groupPosition - mIndex_firstBuiltin];
+    if (groupPosition == INDEX_RINGTONES) {
+      return mRingtoneCache;
+    }
+    if (groupPosition == INDEX_NOTIFICATIONS) {
+      return mNotifyCache;
+    }
+    if (groupPosition == INDEX_ALARMS) {
+      return mAlarmCache;
     }
 
-    if (groupPosition == 0) {
+    if (groupPosition == INDEX_DEFAULTS) {
       return mDefaults;
     }
 
@@ -180,17 +197,17 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     convert.setPadding(32,0,0,0);
     String text = null;
 
-    if (groupPosition >= mIndex_firstPicker) 
+    if (groupPosition == INDEX_PICKERS) 
       text =  "Other Ringtone Apps";
     else
-    if (groupPosition >= mIndex_firstContent) 
+    if (groupPosition == INDEX_CONTENTS) 
       text =  "Other Audio Apps";
     else
-    if (groupPosition >= mIndex_firstAlbum) 
-      text = mMusicCache.names[groupPosition - mIndex_firstAlbum];
+    if (groupPosition >= INDEX_FIRST_ALBUM) 
+      text = mMusicCache.names[groupPosition - INDEX_FIRST_ALBUM];
     else 
-    if (groupPosition >= mIndex_firstBuiltin)
-      text = BUILTIN_NAMES[groupPosition - mIndex_firstBuiltin];
+    if (groupPosition >= INDEX_FIRST_BUILTIN)
+      text = BUILTIN_NAMES[groupPosition - INDEX_FIRST_BUILTIN];
     else 
     if (groupPosition == 0)
       text = "Defaults";
@@ -208,45 +225,30 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   }
   public int getChildrenCount(int groupPosition)
   {
-    if (groupPosition >= mIndex_firstContent || groupPosition >= mIndex_firstPicker) {
-      Object[] apps = (Object[])getGroup(groupPosition);
-      return apps.length;
-    }
+    Object[] objs = (Object[])getGroup(groupPosition);
+    return objs.length;
 
-    if (groupPosition >= mIndex_firstAlbum) {
-      Object[] tracks = (Object[])getGroup(groupPosition);
-      return tracks.length;
-    }
-
-    if (groupPosition >= mIndex_firstBuiltin) {
-      Cursor c = (Cursor)getGroup(groupPosition);
-      return c.getCount();
-    }
-
-    if (groupPosition == 0) {
-      String[] defaults = (String[])getGroup(groupPosition);
-      return defaults.length;
-    }
-
-    return 0;
   }
   public Object getChild(int groupPosition, int childPosition)
   {
-    if (groupPosition >= mIndex_firstContent || groupPosition >= mIndex_firstPicker) {
-      Object[] apps = (Object[])getGroup(groupPosition);
-      AppCache app = (AppCache)apps[childPosition];
-      return app.name;
+    Object[] objs = (Object[])getGroup(groupPosition);
+    return (BaseCache)objs[childPosition];
+
+    /*
+    if (groupPosition == INDEX_CONTENTS || groupPosition == INDEX_PICKERS) {
+      AppCache app = (AppCache)objs[childPosition];
+      return (String)app.name;
     }
 
-    if (groupPosition >= mIndex_firstAlbum) {
-      final Object[] tracks = mMusicCache.objects[groupPosition - mIndex_firstAlbum];
-      return (String)tracks[childPosition];
+    if (groupPosition >= INDEX_FIRST_ALBUM) {
+      MediaCache track = (MediaCache)objs[childPosition];
+      return (String)track.name;
     }
 
-    if (groupPosition >= mIndex_firstBuiltin) {
-      Cursor c = (Cursor)getGroup(groupPosition);
-      c.moveToPosition(childPosition);
-      return c.getString(RingtoneManager.TITLE_COLUMN_INDEX);
+
+    if (groupPosition == INDEX_RINGTONES || groupPosition == INDEX_NOTIFICATIONS || groupPosition == INDEX_ALARMS) {
+      RingCache ring = (RingCache)objs[childPosition];
+      return (String)ring.name;
     }
 
     if (groupPosition == 0) {
@@ -254,11 +256,16 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     }
 
 
+
     return null;
+    */
   }
   public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) 
   {
-    String title = (String)getChild(groupPosition, childPosition);
+    BaseCache obj = (BaseCache)getChild(groupPosition, childPosition);
+    return obj.getView(mContext, convertView, parent);
+
+/*
     if (convertView == null) {
       convertView = new TextView(mContext);
     }
@@ -267,10 +274,38 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     convert.setPadding(32,0,0,0);
     convert.setText(title);
     return convert;
+    */
   }
 
 
 
+  private Object[] _cache_builtins(int ringtone_type) 
+  {
+    RingtoneManager mgr = new RingtoneManager(mContext);
+    ArrayList<RingCache> rings = new ArrayList<RingCache>();
+    Cursor cursor;
+    mgr.setType(ringtone_type);
+
+    cursor = mgr.getCursor();
+
+    for (cursor.moveToFirst(); cursor.moveToNext(); ) {
+      RingCache ring = new RingCache();
+      ring.name = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
+      ring.uri = Uri.parse( cursor.getString(RingtoneManager.URI_COLUMN_INDEX) );
+      rings.add(ring);
+    }
+
+    cursor.close();
+
+    return rings.toArray();
+  }
+
+  static final String[] ALBUM_CURSOR_COLS = new String[] {
+    MediaStore.Audio.Media._ID,
+    MediaStore.Audio.Media.TITLE,
+    MediaStore.Audio.Media.ARTIST,
+    MediaStore.Audio.Media.ALBUM,
+  };
   private void _cache_album_names()
   {
 
@@ -293,15 +328,20 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     int imax = cursor.getCount();
     for (i=0, cursor.moveToFirst(); i < imax; i++, cursor.moveToNext()) {
       String title = cursor.getString(colidx_artist) + " / " + cursor.getString(colidx_album);
-      ArrayList tracks = null;
+
+      ArrayList<MediaCache> tracks = null;
       if (!album_map.containsKey(title)) {
-        tracks = new ArrayList();
+        tracks = new ArrayList<MediaCache>();
         album_map.put(title, tracks);
       }
       else {
-        tracks = (ArrayList)album_map.get(title);
+        tracks = (ArrayList<MediaCache>)album_map.get(title);
       }
-      tracks.add(cursor.getString(colidx_title));
+
+      MediaCache track = new MediaCache();
+      track.name = cursor.getString(colidx_title);
+      track.uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, cursor.getLong(colidx_id));
+      tracks.add(track);
     }
 
     int size = album_map.size();
@@ -315,7 +355,6 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     }
 
   }
-
 
 
   private Object[] _cache_intents(Intent intent) {
@@ -345,5 +384,4 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
       return cache.toArray();
   }
-
 }
