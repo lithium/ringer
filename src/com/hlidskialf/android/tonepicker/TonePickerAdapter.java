@@ -14,70 +14,31 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import android.util.Log;
 
-class MusicCache {
-  public String[]   names;
-  public Object[][] objects;
+import com.hlidskialf.android.bragi.R;
 
-  public MusicCache(int size) {
-    setSize(size);
-  }
-  public void setSize(int size) {
-    names = new String[size];
-    objects = new Object[size][];
-  }
-  public int size() { return names.length; }
-
-  public void put(int pos, String new_name, Object[] new_objects) {
-    names[pos] = new_name;
-    objects[pos] = new_objects;
-  }
-}
-
-
-abstract class BaseCache {
-  public String name;
-
-  public View getView(Context context, View convertView, ViewGroup parent)
-  {
-    if (convertView == null) {
-      convertView = new TextView(context);
-    }
-    TextView convert = (TextView)convertView;
-    convert.setHeight(32);
-    convert.setPadding(32,0,0,0);
-    convert.setText(name);
-    return convert;
-  }
-}
-
-class AppCache extends BaseCache {
-  public Drawable icon; 
-  public Intent intent;
-}
-class RingCache extends BaseCache {
-  public Uri uri;
-}
-class MediaCache extends BaseCache {
-  public Uri uri;
-}
-class DefaultCache extends BaseCache {
-  public DefaultCache(String new_name) { name = new_name; }
-}
 
 public class TonePickerAdapter extends BaseExpandableListAdapter {
   private Context mContext;
   private Uri mExistingUri;                                
   private ComponentName mExcludeApp;
+  private LayoutInflater mInflater;
+
+  public long mSelectedId = -1;
                                                            
   private static final String[] BUILTIN_NAMES = new String[] { "Ringtones","Notifications","Alarms", };
   private static final int INDEX_DEFAULTS=0;
@@ -97,7 +58,96 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   private Object[] mContentIntents;
   private Object[] mPickerIntents;
 
+  class MusicCache {
+    public String[]   names;
+    public Object[][] objects;
 
+    public MusicCache(int size) {
+      setSize(size);
+    }
+    public void setSize(int size) {
+      names = new String[size];
+      objects = new Object[size][];
+    }
+    public int size() { return names.length; }
+
+    public void put(int pos, String new_name, Object[] new_objects) {
+      names[pos] = new_name;
+      objects[pos] = new_objects;
+    }
+  }
+
+
+  abstract class BaseCache {
+    public String name;
+    public long id;
+
+    public class ViewHolder {
+      TextView label;
+      ImageView icon;
+      ImageView selected;
+    };
+
+    public View getView(View convertView, ViewGroup parent)
+    {
+      ViewHolder holder;
+      if (convertView == null) {
+        convertView = mInflater.inflate(R.layout.tonepicker_child, null);
+        holder = new ViewHolder();
+        holder.icon = (ImageView)convertView.findViewById(android.R.id.icon1);
+        holder.label = (TextView)convertView.findViewById(android.R.id.text1);
+        holder.selected = (ImageView)convertView.findViewById(android.R.id.icon2);
+        convertView.setTag(holder);
+
+      } else {
+        holder = (ViewHolder)convertView.getTag();
+      }
+
+      holder.label.setText(name);
+      holder.icon.setVisibility(View.GONE);
+
+
+      return convertView;
+    }
+  }
+
+  class AppCache extends BaseCache {
+    public Drawable icon; 
+    public Intent intent;
+    public View getView(View convertView, ViewGroup parent)
+    { 
+      convertView = super.getView(convertView,parent);
+      ViewHolder holder = (ViewHolder)convertView.getTag();
+
+      holder.icon.setImageDrawable(icon);
+      holder.icon.setVisibility(View.VISIBLE);
+
+      holder.selected.setVisibility(View.GONE);
+
+      return convertView;
+
+    }
+  }
+  class RingCache extends BaseCache {
+    public Uri uri;
+    public View getView(View convertView, ViewGroup parent)
+    { 
+      convertView = super.getView(convertView,parent);
+      ViewHolder holder = (ViewHolder)convertView.getTag();
+
+      holder.selected.setVisibility(View.VISIBLE);
+      if (mSelectedId == id) {
+        holder.selected.setImageResource(android.R.drawable.button_onoff_indicator_on);
+      }
+      else {
+        holder.selected.setImageResource(android.R.drawable.button_onoff_indicator_off);
+      }
+      return convertView;
+    }
+  }
+  class DefaultCache extends RingCache {
+    public DefaultCache(String new_name, Uri new_uri) { name = new_name; uri = new_uri; }
+  }
   
 
   public TonePickerAdapter(Context context, Uri existing_uri, ComponentName exclude_app)
@@ -106,11 +156,15 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     mExistingUri = existing_uri;
     mExcludeApp = exclude_app;
 
+
+    mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
     if (existing_uri == null) {
-      mDefaults = new DefaultCache[] { new DefaultCache("Silence") };
+      mDefaults = new DefaultCache[] { new DefaultCache("Silence",null) };
     }
     else {
-      mDefaults = new DefaultCache[] { new DefaultCache(mExistingUri.toString()), new DefaultCache("Silence") };
+      Ringtone tone = RingtoneManager.getRingtone(context, mExistingUri);
+      mDefaults = new DefaultCache[] { new DefaultCache("Current: "+tone.getTitle(context), mExistingUri), new DefaultCache("Silence",null) };
     }
 
 
@@ -121,22 +175,21 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     _cache_album_names();
 
     Intent intent;
-    List<ResolveInfo> activities;
-
+    
     intent = new Intent(Intent.ACTION_GET_CONTENT) .setType("audio/*") .addCategory(Intent.CATEGORY_OPENABLE);
     mContentIntents = _cache_intents(intent);
 
     intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
     mPickerIntents = _cache_intents(intent);
 
-    INDEX_CONTENTS = INDEX_FIRST_ALBUM + mMusicCache.size();
+    INDEX_CONTENTS = INDEX_FIRST_ALBUM + (mMusicCache != null ? mMusicCache.size() : 0);
     INDEX_PICKERS = INDEX_CONTENTS+1;
 
   }
 
   public boolean isChildSelectable(int groupPosition, int childPosition) 
   {  
-      return true;
+    return true;
   }  
   public boolean hasStableIds()
   {  
@@ -221,7 +274,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
   public long getChildId(int groupPosition, int childPosition) 
   {
-    return groupPosition<<32 & childPosition;
+    return ((long)groupPosition<<32) | childPosition;
   }
   public int getChildrenCount(int groupPosition)
   {
@@ -233,48 +286,14 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   {
     Object[] objs = (Object[])getGroup(groupPosition);
     return (BaseCache)objs[childPosition];
-
-    /*
-    if (groupPosition == INDEX_CONTENTS || groupPosition == INDEX_PICKERS) {
-      AppCache app = (AppCache)objs[childPosition];
-      return (String)app.name;
-    }
-
-    if (groupPosition >= INDEX_FIRST_ALBUM) {
-      MediaCache track = (MediaCache)objs[childPosition];
-      return (String)track.name;
-    }
-
-
-    if (groupPosition == INDEX_RINGTONES || groupPosition == INDEX_NOTIFICATIONS || groupPosition == INDEX_ALARMS) {
-      RingCache ring = (RingCache)objs[childPosition];
-      return (String)ring.name;
-    }
-
-    if (groupPosition == 0) {
-      return (String)mDefaults[childPosition];
-    }
-
-
-
-    return null;
-    */
   }
   public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) 
   {
     BaseCache obj = (BaseCache)getChild(groupPosition, childPosition);
-    return obj.getView(mContext, convertView, parent);
+    obj.id = getChildId(groupPosition, childPosition);
+    Log.v("TonePicker", "child_id = "+String.valueOf(obj.id));
+    return obj.getView(convertView, parent);
 
-/*
-    if (convertView == null) {
-      convertView = new TextView(mContext);
-    }
-    TextView convert = (TextView)convertView;
-    convert.setHeight(32);
-    convert.setPadding(32,0,0,0);
-    convert.setText(title);
-    return convert;
-    */
   }
 
 
@@ -324,21 +343,20 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
 
     LinkedHashMap<String,ArrayList> album_map = new LinkedHashMap<String,ArrayList>();
-    int i;
     int imax = cursor.getCount();
-    for (i=0, cursor.moveToFirst(); i < imax; i++, cursor.moveToNext()) {
+    for (cursor.moveToFirst(); cursor.moveToNext(); ) {
       String title = cursor.getString(colidx_artist) + " / " + cursor.getString(colidx_album);
 
-      ArrayList<MediaCache> tracks = null;
+      ArrayList<RingCache> tracks = null;
       if (!album_map.containsKey(title)) {
-        tracks = new ArrayList<MediaCache>();
+        tracks = new ArrayList<RingCache>();
         album_map.put(title, tracks);
       }
       else {
-        tracks = (ArrayList<MediaCache>)album_map.get(title);
+        tracks = (ArrayList<RingCache>)album_map.get(title);
       }
 
-      MediaCache track = new MediaCache();
+      RingCache track = new RingCache();
       track.name = cursor.getString(colidx_title);
       track.uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, cursor.getLong(colidx_id));
       tracks.add(track);
@@ -348,7 +366,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
     mMusicCache = new MusicCache(size);
     Iterator it = album_map.entrySet().iterator();
-    for (i=0; it.hasNext(); i++) {
+    for (int i=0; it.hasNext(); i++) {
       Entry<String,ArrayList> e = (Entry)it.next();
       ArrayList tracks = (ArrayList)e.getValue();
       mMusicCache.put(i, e.getKey(), (Object[]) tracks.toArray());
@@ -384,4 +402,5 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
       return cache.toArray();
   }
+
 }
