@@ -14,6 +14,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Gravity;
 import android.view.View;
@@ -145,6 +146,9 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       return convertView;
     }
   }
+  class BuiltinRingCache extends RingCache {
+    Ringtone ringtone;
+  }
   class DefaultCache extends RingCache {
     public DefaultCache(String new_name, Uri new_uri) { name = new_name; uri = new_uri; }
   }
@@ -244,8 +248,12 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   {
     if (convertView == null) {
       convertView = new TextView(mContext);
+
     }
     TextView convert = (TextView)convertView;
+    convert.setSingleLine();
+    convert.setHorizontallyScrolling(true);
+    convert.setEllipsize( TextUtils.TruncateAt.MARQUEE );
     convert.setHeight(32);
     convert.setPadding(32,0,0,0);
     String text = null;
@@ -304,13 +312,14 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     ArrayList<RingCache> rings = new ArrayList<RingCache>();
     Cursor cursor;
     mgr.setType(ringtone_type);
+    mgr.setIncludeDrm(true);
 
     cursor = mgr.getCursor();
 
     for (cursor.moveToFirst(); cursor.moveToNext(); ) {
       RingCache ring = new RingCache();
       ring.name = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
-      ring.uri = Uri.parse( cursor.getString(RingtoneManager.URI_COLUMN_INDEX) );
+      ring.uri = mgr.getRingtoneUri(cursor.getPosition());
       rings.add(ring);
     }
 

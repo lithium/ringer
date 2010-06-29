@@ -78,8 +78,12 @@ public class TonePickerActivity extends ExpandableListActivity {
       if (TonePickerAdapter.RingCache.class.isInstance(obj)) {
         TonePickerAdapter.RingCache rc = (TonePickerAdapter.RingCache)obj;
         if (rc.uri != null) {
-          playRingtone(rc.uri);
+          if (mSelectedUri == rc.uri) 
+            stopRingtone();
+          else 
+            playRingtone(rc.uri);
         }
+
         mAdapter.mSelectedId = mAdapter.getChildId(groupPosition,childPosition);
         mSelectedUri = rc.uri;
         mListView.invalidateViews();
