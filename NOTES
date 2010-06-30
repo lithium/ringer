@@ -1,0 +1,47 @@
+
+# Tone Picker
+#- expandablelistview of ringtones
+
+# Slot Picker
+#- listview of slots
+
+# Main Screen
+#- Action Bar
+#-- add profile
+#-- configure slots
+#- profile radio listview
+#-- longpress: {activate,edit,delete}
+
+# Slot Editor
+#- action bar
+#-- add slot
+#- Listview of Slots
+#-- longpress: {edit,delete}
+
+
+# Profile Editor
+...
+
+
+
+#- vibrator
+#-- silent {normal, silent, vibrate}
+#-- vibrate on ring {on,off,silent}
+#-- vibrate on notify {on,off,silent}
+
+#- volumes
+#-- ringer volume
+#-- music volume
+#-- call volume
+#-- system volume
+#-- alarm volume
+#-- notification volume
+
+#- slots
+#-- default ringtone
+#-- default notification
+#-- custom slot 1
+#-- custom slot 2
+...
+#-- custom slot N
+
