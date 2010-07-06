@@ -2,4 +2,8 @@
 <resources>
     <string name="bragi_label">Bragi</string>
     <string name="tonepicker_label">Tone Picker</string>
+
+
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -76,9 +76,27 @@ public class BragiDatabase {
     }
   }
 
+  public boolean renameSlot(String old_name, String new_name)
+  {
+    SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+    ContentValues cv = new ContentValues();
+    cv.put(SlotColumns.NAME, new_name);
+
+    int ret = db.update(SlotColumns.TABLE_NAME, cv, SlotColumns.NAME+"=?", new String[] {old_name});
+    return (ret > 0);
+  }
+
+  public boolean removeSlot(String name) 
+  {
+    SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+    int ret = db.delete(SlotColumns.TABLE_NAME, SlotColumns.NAME+"=?", new String[] {name});
+    return (ret > 0);
+  }
+
   private static String _slugify(String name) {
     String slug = name.toLowerCase();
-    slug = slug.replaceAll("\\W+", "-");
+    slug = slug.replaceAll("[^0-9a-zA-Z]+", "-");
     return slug;
   }
 
