@@ -1,3 +1,4 @@
+h2. Activities
 
 # Tone Picker
 #- expandablelistview of ringtones
@@ -20,28 +21,36 @@
 
 
 # Profile Editor
-...
-
-
-
-#- vibrator
-#-- silent {normal, silent, vibrate}
+#- Silent Mode / Vibration -- header view
+#-- silent mode {normal, silent, vibrate}
 #-- vibrate on ring {on,off,silent}
 #-- vibrate on notify {on,off,silent}
-
-#- volumes
+#- Volume Levels -- header view
 #-- ringer volume
 #-- music volume
 #-- call volume
 #-- system volume
 #-- alarm volume
 #-- notification volume
-
-#- slots
-#-- default ringtone
-#-- default notification
-#-- custom slot 1
-#-- custom slot 2
+#- Listview of slot ringtones
+#-- slot 1
+#-- slot 2
 ...
-#-- custom slot N
+#-- slot N
 
+
+
+h2. Default Profiles
+- Normal
+- Loud 
+- Vibrate Only
+- Silent
+
+h2. Default Slots
+- ringtone
+- notification
+- reminder
+- alarm
+- email
+- sms
+- im
