@@ -6,6 +6,7 @@
     <application android:label="@string/bragi_label">
 
         <activity android:name="com.hlidskialf.android.bragi.BragiActivity"
+                  android:theme="@android:style/Theme.NoTitleBar"
                   android:label="@string/bragi_label">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,5 +22,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity" 
+                  android:theme="@android:style/Theme.NoTitleBar"/>
     </application>
 </manifest> 

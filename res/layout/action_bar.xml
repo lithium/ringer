@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#0000aa"
+    >
+
+    <ImageView android:id="@+id/actionbar_logo"
+      android:layout_width="wrap_content"
+      android:layout_height="48dp"
+      android:layout_alignParentLeft="true"
+      />
+
+    <LinearLayout android:orientation="horizontal"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentRight="true"
+      android:layout_centerVertical="true"
+      >
+      <ImageButton android:id="@+id/actionbar_button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="#00000000"
+        />
+      <ImageButton android:id="@+id/actionbar_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="#00000000"
+        />
+      <ImageButton android:id="@+id/actionbar_button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="#00000000"
+        />
+    </LinearLayout>
+
+
+</RelativeLayout>

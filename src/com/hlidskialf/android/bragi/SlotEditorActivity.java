@@ -1,15 +1,15 @@
 package com.hlidskialf.android.bragi;
 
 import android.app.ListActivity;
-import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
-import android.content.Intent;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 
-public class BragiActivity extends ListActivity
+public class SlotEditorActivity extends ListActivity
                 implements View.OnClickListener
 {
     @Override
@@ -21,25 +21,31 @@ public class BragiActivity extends ListActivity
         ImageView v;
         v = (ImageView)findViewById(R.id.actionbar_logo);
         v.setImageResource(R.drawable.logo);
+        v.setOnClickListener(this);
 
         v = (ImageView)findViewById(R.id.actionbar_button1);
         v.setOnClickListener(this);
         v.setVisibility(View.VISIBLE);
         v.setImageResource(android.R.drawable.ic_menu_add);
 
-        v = (ImageView)findViewById(R.id.actionbar_button2);
-        v.setOnClickListener(this);
-        v.setVisibility(View.VISIBLE);
-        v.setImageResource(android.R.drawable.ic_menu_preferences);
+        BragiDatabase mDbHelper = new BragiDatabase(this);
+        mDbHelper.addSlot("Default Ringtone");
+        mDbHelper.addSlot("Default Notification");
+        mDbHelper.addSlot("Default Alarm");
+
+        Cursor c = mDbHelper.getAllSlots();
+        setListAdapter( new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, c, 
+          new String[] { BragiDatabase.SlotColumns.NAME }, 
+          new int[] {android.R.id.text1})
+        );
+
     }
 
     @Override 
     public void onClick(View v) {
-      long id = v.getId();
-      Intent intent = new Intent();
-      if (id == R.id.actionbar_button2) {
-        intent.setClass(this, SlotEditorActivity.class);
-        startActivity(intent);
-      }
+        long id = v.getId();
+        if (id == R.id.actionbar_logo) {
+          finish();
+        }
     }
 }
