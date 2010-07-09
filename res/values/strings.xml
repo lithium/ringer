@@ -3,7 +3,7 @@
     <string name="bragi_label">Bragi</string>
     <string name="tonepicker_label">Tone Picker</string>
 
-
-    <string name="rename">Rename</string>
+    <string name="activate">Activate</string>
+    <string name="edit">Edit</string>
     <string name="delete">Delete</string>
 </resources>

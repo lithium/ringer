@@ -14,7 +14,7 @@ import android.net.Uri;
 
 public class BragiDatabase {
   private static final String DATABASE_NAME = "bragi.db";
-  private static final int DATABASE_VERSION = 3;
+  private static final int DATABASE_VERSION = 4;
 
   public static final String AUTHORITY = "com.hlidskialf.android.provider.bragi";
 
@@ -72,7 +72,7 @@ public class BragiDatabase {
 
       q = "CREATE TABLE " + ProfileColumns.TABLE_NAME + "( "
         + ProfileColumns._ID + " INTEGER PRIMARY KEY, "
-        + ProfileColumns.NAME + " TEXT, "
+        + ProfileColumns.NAME + " TEXT UNIQUE, "
         + ProfileColumns.SILENT_MODE + " INTEGER, "
         + ProfileColumns.VIBRATE_RING + " INTEGER, "
         + ProfileColumns.VIBRATE_NOTIFY + " INTEGER, "
@@ -130,21 +130,21 @@ public class BragiDatabase {
     }
   }
 
-  public boolean renameSlot(String old_name, String new_name)
+  public boolean updateSlot(long slot_id, String new_name)
   {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
     ContentValues cv = new ContentValues();
     cv.put(SlotColumns.NAME, new_name);
 
-    int ret = db.update(SlotColumns.TABLE_NAME, cv, SlotColumns.NAME+"=?", new String[] {old_name});
+    int ret = db.update(SlotColumns.TABLE_NAME, cv, SlotColumns._ID+"=?", new String[] {String.valueOf(slot_id)});
     return (ret > 0);
   }
 
-  public boolean removeSlot(String name) 
+  public boolean deleteSlot(long slot_id) 
   {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-    int ret = db.delete(SlotColumns.TABLE_NAME, SlotColumns.NAME+"=?", new String[] {name});
+    int ret = db.delete(SlotColumns.TABLE_NAME, SlotColumns._ID+"=?", new String[] {String.valueOf(slot_id)});
     return (ret > 0);
   }
 
@@ -172,10 +172,11 @@ public class BragiDatabase {
     ContentValues cv = new ContentValues();
     cv.put(SlotColumns.NAME, name);
     try {
-      long profile_id = db.insertOrThrow(SlotColumns.TABLE_NAME, "", cv);
+      long profile_id = db.insertOrThrow(ProfileColumns.TABLE_NAME, "", cv);
       synchronizeProfileSlots(profile_id);
       return profile_id;
     } catch (SQLException e) {
+      Log.e("BragiDatabase", e.toString());
       return -1;
     }
   }

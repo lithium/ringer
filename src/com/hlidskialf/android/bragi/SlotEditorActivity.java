@@ -20,11 +20,11 @@ public class SlotEditorActivity extends ListActivity
 {
     private BragiDatabase mDbHelper;
     private Cursor mSlotCursor;
-
-    private static final int CONTEXT_RENAME_ID=1;
-    private static final int CONTEXT_DELETE_ID=2;
-
     private int mColIdx_slot_name;
+
+    private static final int MENU_EDIT_ID=1;
+    private static final int MENU_DELETE_ID=2;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -52,13 +52,13 @@ public class SlotEditorActivity extends ListActivity
           new String[] { BragiDatabase.SlotColumns.NAME }, 
           new int[] {android.R.id.text1})
         );
-
         mColIdx_slot_name = mSlotCursor.getColumnIndex(BragiDatabase.SlotColumns.NAME);
 
-        registerForContextMenu(getListView());
+
+        ListView mListView = getListView();
+        registerForContextMenu(mListView);
     }
 
-    @Override 
     public void onClick(View v) {
         long id = v.getId();
         if (id == R.id.actionbar_logo) {
@@ -79,23 +79,25 @@ public class SlotEditorActivity extends ListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
-      rename_slot(position);
+      rename_slot(position, id);
     }
 
-    protected void rename_slot(int position)
+    protected void rename_slot(int position, long id)
     {
-      final String cur_name = getName(position);
+      final String cur_name = get_name(position);
+      final long slot_id = id;
 
       OneLineInputDialog dia = new OneLineInputDialog(this, R.string.bragi_label, "New name for '"+cur_name+"'",cur_name);
       dia.setOnCompleteListener(new OneLineInputDialog.OnCompleteListener() {
         public void onComplete(String value) {
-          mDbHelper.renameSlot(cur_name, value); 
+          mDbHelper.updateSlot(slot_id, value); 
           mSlotCursor.requery();
         }
       });
     }
 
-    protected String getName(int position)
+
+    protected String get_name(int position)
     {
       mSlotCursor.moveToPosition(position);
       return mSlotCursor.getString(mColIdx_slot_name);
@@ -106,8 +108,8 @@ public class SlotEditorActivity extends ListActivity
     {
       super.onCreateContextMenu(menu,v,menuInfo);
 
-      menu.add(0, CONTEXT_RENAME_ID, 0, R.string.rename);
-      menu.add(0, CONTEXT_DELETE_ID, 0, R.string.delete);
+      menu.add(0, MENU_EDIT_ID, 0, R.string.edit);
+      menu.add(0, MENU_DELETE_ID, 0, R.string.delete);
     }
 
     @Override
@@ -117,13 +119,13 @@ public class SlotEditorActivity extends ListActivity
       final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
       final int id = item.getItemId();
 
-      if (id == CONTEXT_RENAME_ID) {
-        rename_slot(info.position);
+      if (id == MENU_EDIT_ID) {
+        rename_slot(info.position, info.id);
         return true;
       }
 
-      if (id == CONTEXT_DELETE_ID) {
-        mDbHelper.removeSlot(getName(info.position));
+      if (id == MENU_DELETE_ID) {
+        mDbHelper.deleteSlot(info.id);
         mSlotCursor.requery();
         return true;
       }
