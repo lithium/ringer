@@ -217,13 +217,13 @@ public class BragiDatabase {
     int ret = db.update(ProfileColumns.TABLE_NAME, cv, ProfileColumns._ID+"=?", new String[] { String.valueOf(profile_id) });
     return (ret > 0);
   }
+
   public boolean deleteProfile(long profile_id) 
   {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
     int ret = db.delete(ProfileColumns.TABLE_NAME, ProfileColumns._ID+"=?", new String[] { String.valueOf(profile_id) });
     return (ret > 0);
   }
-
 
   public boolean updateProfileSlot(long profile_id, long slot_id, Uri uri)
   {

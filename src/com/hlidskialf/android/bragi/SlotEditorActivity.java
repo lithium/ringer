@@ -34,13 +34,18 @@ public class SlotEditorActivity extends ListActivity
 
         ImageView v;
         v = (ImageView)findViewById(R.id.actionbar_logo);
-        v.setImageResource(R.drawable.logo);
         v.setOnClickListener(this);
+        v.setImageResource(R.drawable.logo);
 
         v = (ImageView)findViewById(R.id.actionbar_button1);
         v.setOnClickListener(this);
-        v.setVisibility(View.VISIBLE);
         v.setImageResource(android.R.drawable.ic_menu_add);
+        v.setVisibility(View.VISIBLE);
+
+        v = (ImageView)findViewById(R.id.actionbar_button2);
+        v.setOnClickListener(this);
+        v.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+        v.setVisibility(View.VISIBLE);
 
         mDbHelper = new BragiDatabase(this);
         mDbHelper.addSlot("Default Ringtone");
@@ -61,7 +66,7 @@ public class SlotEditorActivity extends ListActivity
 
     public void onClick(View v) {
         long id = v.getId();
-        if (id == R.id.actionbar_logo) {
+        if (id == R.id.actionbar_logo || id == R.id.actionbar_button2) {
           finish();
         }
         else

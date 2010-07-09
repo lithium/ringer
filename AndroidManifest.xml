@@ -25,5 +25,8 @@
 
         <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity" 
                   android:theme="@style/Theme.Dialog.NoTitleBar"/>
+
+        <activity android:name="com.hlidskialf.android.bragi.ProfileEditorActivity" 
+                  android:theme="@style/Theme.Dialog.NoTitleBar"/>
     </application>
 </manifest> 

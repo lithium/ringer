@@ -27,6 +27,8 @@ public class BragiActivity extends ListActivity
     private static final int MENU_EDIT_ID=2;
     private static final int MENU_DELETE_ID=3;
 
+    private static final int RESULT_EDIT_PROFILE=1;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -68,7 +70,7 @@ public class BragiActivity extends ListActivity
     }
 
     public void onClick(View v) {
-      long id = v.getId();
+      final long id = v.getId();
       Intent intent = new Intent();
       if (id == R.id.actionbar_button2) {
         intent.setClass(this, SlotEditorActivity.class);
@@ -127,7 +129,11 @@ public class BragiActivity extends ListActivity
       return false;
     }
 
-    protected void edit_profile(int position) { }
+    protected void edit_profile(int position) 
+    { 
+      Intent intent = new Intent(this, ProfileEditorActivity.class);
+      startActivityForResult(intent, RESULT_EDIT_PROFILE);
+    }
 
     protected void activate_profile(int position) 
     {
