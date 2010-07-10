@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="silent_mode_slugs">
+        <item>normal</item>
+        <item>silent</item>
+        <item>vibrate</item>
+    </string-array>
+    <string-array name="silent_mode_names">
+        <item>Normal</item>
+        <item>Silent</item>
+        <item>Vibrate</item>
+    </string-array>
+
+    <string-array name="onoffsilent_slugs">
+        <item>on</item>
+        <item>off</item>
+        <item>silent</item>
+    </string-array>
+    <string-array name="onoffsilent_names">
+        <item>On</item>
+        <item>Off</item>
+        <item>Silent Mode Only</item>
+    </string-array>
+</resources>
+

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceScreen android:key="silent_mode"
-      android:title="Silent Mode / Vibrate"
+    <PreferenceScreen android:key="volume_screen"
       android:persistent="false"
-      android:summary="silence and vibration settings"
+      android:title="Volume Settings"
+      android:summary="silent mode / vibrate / volume levels"
       />
 
 </PreferenceScreen>

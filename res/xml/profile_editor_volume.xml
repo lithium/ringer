@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+      <ListPreference android:key="silent_mode"
+        android:persistent="false"
+        android:title="Silent Mode"
+        android:entries="@array/silent_mode_names"
+        android:entryValues="@array/silent_mode_slugs"
+        />
+      <ListPreference android:key="vibrate_ring"
+        android:persistent="false"
+        android:title="Vibrate on Ring"
+        android:entries="@array/onoffsilent_names"
+        android:entryValues="@array/onoffsilent_slugs"
+        />
+      <ListPreference android:key="vibrate_notify"
+        android:persistent="false"
+        android:title="Vibrate on Notification"
+        android:entries="@array/onoffsilent_names"
+        android:entryValues="@array/onoffsilent_slugs"
+        />
+
+      <EditTextPreference android:key="volume_ringer"
+        android:persistent="false"
+        android:title="Ringer Volume"
+        />
+      <EditTextPreference android:key="volume_notify"
+        android:persistent="false"
+        android:title="Notification Volume"
+        />
+      <EditTextPreference android:key="volume_music"
+        android:persistent="false"
+        android:title="Media Volume"
+        />
+      <EditTextPreference android:key="volume_call"
+        android:persistent="false"
+        android:title="Call Volume"
+        />
+      <EditTextPreference android:key="volume_system"
+        android:persistent="false"
+        android:title="System Sound Volume"
+        />
+      <EditTextPreference android:key="volume_alarm"
+        android:persistent="false"
+        android:title="Alarm Volume"
+        />
+</PreferenceScreen>
