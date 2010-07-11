@@ -14,10 +14,6 @@ import android.net.Uri;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 
 
 public class BragiDatabase {
@@ -84,7 +80,7 @@ public class BragiDatabase {
     };
   }
 
-  public static final class ProfileModel implements Serializable {
+  public static final class ProfileModel {
     public long id = -1;
     public String name;
     public int silent_mode;
@@ -114,7 +110,18 @@ public class BragiDatabase {
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_SYSTEM)) != -1) this.volume_system = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_ALARM)) != -1) this.volume_alarm = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_NOTIFY)) != -1) this.volume_notify = c.getInt(idx);
-
+    }
+    public void updateValues(ContentValues cv) {
+      this.name = cv.getAsString(ProfileColumns.NAME);
+      this.silent_mode = cv.getAsInteger(ProfileColumns.SILENT_MODE);
+      this.vibrate_ring = cv.getAsInteger(ProfileColumns.VIBRATE_RING);
+      this.vibrate_notify = cv.getAsInteger(ProfileColumns.VIBRATE_NOTIFY);
+      this.volume_ringer = cv.getAsInteger(ProfileColumns.VOLUME_RINGER);
+      this.volume_music = cv.getAsInteger(ProfileColumns.VOLUME_MUSIC);
+      this.volume_call = cv.getAsInteger(ProfileColumns.VOLUME_CALL);
+      this.volume_system = cv.getAsInteger(ProfileColumns.VOLUME_SYSTEM);
+      this.volume_alarm = cv.getAsInteger(ProfileColumns.VOLUME_ALARM);
+      this.volume_notify = cv.getAsInteger(ProfileColumns.VOLUME_NOTIFY);
     }
     public ContentValues contentValues() {
       ContentValues cv = new ContentValues();
@@ -132,36 +139,6 @@ public class BragiDatabase {
       return cv;
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException
-    {
-      out.defaultWriteObject();
-      out.writeLong(this.id);
-      out.writeUTF(this.name);
-      out.writeInt(this.silent_mode);
-      out.writeInt(this.vibrate_ring);
-      out.writeInt(this.vibrate_notify);
-      out.writeInt(this.volume_ringer);
-      out.writeInt(this.volume_music);
-      out.writeInt(this.volume_call);
-      out.writeInt(this.volume_system);
-      out.writeInt(this.volume_alarm);
-      out.writeInt(this.volume_notify);
-    }
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
-    {
-      in.defaultReadObject();
-      this.id = in.readInt();
-      this.name = in.readUTF();
-      this.silent_mode = in.readInt();
-      this.vibrate_ring = in.readInt();
-      this.vibrate_notify = in.readInt();
-      this.volume_ringer = in.readInt();
-      this.volume_music = in.readInt();
-      this.volume_call = in.readInt();
-      this.volume_system = in.readInt();
-      this.volume_alarm = in.readInt();
-      this.volume_notify = in.readInt();
-    }
 
   }
 
@@ -376,7 +353,7 @@ public class BragiDatabase {
     ContentValues cv = new ContentValues();
     cv.put(ProfileSlotColumns.URI, uri != null ? uri.toString() : null);
 
-    if (row_count < 1) {
+    if (row_count > 0) {
       int ret = db.update(ProfileSlotColumns.TABLE_NAME, cv, 
         ProfileSlotColumns.PROFILE_ID+"=? AND "+ProfileSlotColumns.SLOT_ID+"=?", 
         new String[] { String.valueOf(profile_id), String.valueOf(slot_id) }
@@ -390,6 +367,7 @@ public class BragiDatabase {
       long id = db.insertOrThrow(ProfileSlotColumns.TABLE_NAME, "", cv);
       return true;
     } catch (SQLException e) { 
+      Log.e("BragiDatabase", "updateProfileSlot: "+e.toString());
     }
 
     return false;

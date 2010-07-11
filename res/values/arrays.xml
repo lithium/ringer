@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="silent_mode_slugs">
-        <item>normal</item>
-        <item>silent</item>
-        <item>vibrate</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
     <string-array name="silent_mode_names">
         <item>Normal</item>
@@ -12,13 +12,13 @@
     </string-array>
 
     <string-array name="onoffsilent_slugs">
-        <item>on</item>
-        <item>off</item>
-        <item>silent</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
     <string-array name="onoffsilent_names">
-        <item>On</item>
         <item>Off</item>
+        <item>On</item>
         <item>Silent Mode Only</item>
     </string-array>
 </resources>
