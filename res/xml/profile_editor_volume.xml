@@ -19,27 +19,27 @@
         android:entryValues="@array/onoffsilent_slugs"
         />
 
-      <EditTextPreference android:key="volume_ringer"
+      <com.hlidskialf.android.preference.SeekBarPreference android:key="volume_ringer"
         android:persistent="false"
         android:title="Ringer Volume"
         />
-      <EditTextPreference android:key="volume_notify"
+      <com.hlidskialf.android.preference.SeekBarPreference android:key="volume_notify"
         android:persistent="false"
         android:title="Notification Volume"
         />
-      <EditTextPreference android:key="volume_music"
+      <com.hlidskialf.android.preference.SeekBarPreference android:key="volume_music"
         android:persistent="false"
         android:title="Media Volume"
         />
-      <EditTextPreference android:key="volume_call"
+      <com.hlidskialf.android.preference.SeekBarPreference android:key="volume_call"
         android:persistent="false"
         android:title="Call Volume"
         />
-      <EditTextPreference android:key="volume_system"
+      <com.hlidskialf.android.preference.SeekBarPreference android:key="volume_system"
         android:persistent="false"
         android:title="System Sound Volume"
         />
-      <EditTextPreference android:key="volume_alarm"
+      <com.hlidskialf.android.preference.SeekBarPreference android:key="volume_alarm"
         android:persistent="false"
         android:title="Alarm Volume"
         />
