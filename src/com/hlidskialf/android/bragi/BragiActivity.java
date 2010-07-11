@@ -69,6 +69,12 @@ public class BragiActivity extends ListActivity
         registerForContextMenu(mListView);
     }
 
+    public void finish() {
+      mProfileCursor.close();
+      mDbHelper.close();
+      super.finish();
+    }
+
     public void onClick(View v) {
       final long id = v.getId();
       Intent intent = new Intent();
@@ -116,7 +122,7 @@ public class BragiActivity extends ListActivity
       }
 
       if (id == MENU_EDIT_ID) {
-        edit_profile(info.position);
+        edit_profile(info.position, info.id);
         return true;
       }
 
@@ -129,9 +135,10 @@ public class BragiActivity extends ListActivity
       return false;
     }
 
-    protected void edit_profile(int position) 
+    protected void edit_profile(int position, long id) 
     { 
       Intent intent = new Intent(this, ProfileEditorActivity.class);
+      intent.putExtra(Bragi.EXTRA_PROFILE_ID, id);
       startActivityForResult(intent, RESULT_EDIT_PROFILE);
     }
 

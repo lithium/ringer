@@ -12,6 +12,14 @@ import android.util.Log;
 import android.provider.BaseColumns;
 import android.net.Uri;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
+
 public class BragiDatabase {
   private static final String DATABASE_NAME = "bragi.db";
   private static final int DATABASE_VERSION = 4;
@@ -44,6 +52,20 @@ public class BragiDatabase {
     public static final String VOLUME_SYSTEM = "volume_system";
     public static final String VOLUME_ALARM = "volume_alarm";
     public static final String VOLUME_NOTIFY = "volume_notify";
+
+    public static final String[] DEFAULT_PROJECTION = {
+      ProfileColumns._ID,
+      ProfileColumns.NAME,
+      ProfileColumns.SILENT_MODE,
+      ProfileColumns.VIBRATE_RING,
+      ProfileColumns.VIBRATE_NOTIFY,
+      ProfileColumns.VOLUME_RINGER,
+      ProfileColumns.VOLUME_MUSIC,
+      ProfileColumns.VOLUME_CALL,
+      ProfileColumns.VOLUME_SYSTEM,
+      ProfileColumns.VOLUME_ALARM,
+      ProfileColumns.VOLUME_NOTIFY,
+    };
   }
 
   public static final class ProfileSlotColumns implements BaseColumns {
@@ -54,6 +76,93 @@ public class BragiDatabase {
     public static final String PROFILE_ID = "profile_id";
     public static final String SLOT_ID = "slot_id";
     public static final String URI = "uri";
+
+    public static final String[] DEFAULT_PROJECTION = {
+      ProfileSlotColumns.PROFILE_ID,
+      ProfileSlotColumns.SLOT_ID,
+      ProfileSlotColumns.URI,
+    };
+  }
+
+  public static final class ProfileModel implements Serializable {
+    public long id = -1;
+    public String name;
+    public int silent_mode;
+    public int vibrate_ring;
+    public int vibrate_notify;
+    public int volume_ringer;
+    public int volume_music;
+    public int volume_call;
+    public int volume_system;
+    public int volume_alarm;
+    public int volume_notify;
+    public Map<Long,Uri> slots;
+
+    public ProfileModel() {}
+    public ProfileModel(Cursor c) { hydrate(c); }
+
+    public void hydrate(Cursor c) {
+      int idx;
+      if ((idx = c.getColumnIndex(ProfileColumns._ID)) != -1) this.id = c.getLong(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.NAME)) != -1) this.name = c.getString(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.SILENT_MODE)) != -1) this.silent_mode = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VIBRATE_RING)) != -1) this.vibrate_ring = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VIBRATE_NOTIFY)) != -1) this.vibrate_notify = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_RINGER)) != -1) this.volume_ringer = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_MUSIC)) != -1) this.volume_music = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_CALL)) != -1) this.volume_call = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_SYSTEM)) != -1) this.volume_system = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_ALARM)) != -1) this.volume_alarm = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_NOTIFY)) != -1) this.volume_notify = c.getInt(idx);
+
+    }
+    public ContentValues contentValues() {
+      ContentValues cv = new ContentValues();
+      cv.put(ProfileColumns._ID, this.id);
+      cv.put(ProfileColumns.NAME, this.name);
+      cv.put(ProfileColumns.SILENT_MODE, this.silent_mode);
+      cv.put(ProfileColumns.VIBRATE_RING, this.vibrate_ring);
+      cv.put(ProfileColumns.VIBRATE_NOTIFY, this.vibrate_notify);
+      cv.put(ProfileColumns.VOLUME_RINGER, this.volume_ringer);
+      cv.put(ProfileColumns.VOLUME_MUSIC, this.volume_music);
+      cv.put(ProfileColumns.VOLUME_CALL, this.volume_call);
+      cv.put(ProfileColumns.VOLUME_SYSTEM, this.volume_system);
+      cv.put(ProfileColumns.VOLUME_ALARM, this.volume_alarm);
+      cv.put(ProfileColumns.VOLUME_NOTIFY, this.volume_notify);
+      return cv;
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+      out.defaultWriteObject();
+      out.writeLong(this.id);
+      out.writeUTF(this.name);
+      out.writeInt(this.silent_mode);
+      out.writeInt(this.vibrate_ring);
+      out.writeInt(this.vibrate_notify);
+      out.writeInt(this.volume_ringer);
+      out.writeInt(this.volume_music);
+      out.writeInt(this.volume_call);
+      out.writeInt(this.volume_system);
+      out.writeInt(this.volume_alarm);
+      out.writeInt(this.volume_notify);
+    }
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+      in.defaultReadObject();
+      this.id = in.readInt();
+      this.name = in.readUTF();
+      this.silent_mode = in.readInt();
+      this.vibrate_ring = in.readInt();
+      this.vibrate_notify = in.readInt();
+      this.volume_ringer = in.readInt();
+      this.volume_music = in.readInt();
+      this.volume_call = in.readInt();
+      this.volume_system = in.readInt();
+      this.volume_alarm = in.readInt();
+      this.volume_notify = in.readInt();
+    }
+
   }
 
   private static class OpenHelper extends SQLiteOpenHelper {
@@ -108,6 +217,16 @@ public class BragiDatabase {
     mContext = context;
     mOpenHelper = new OpenHelper(context);
   }
+  protected void finalize() throws Throwable
+  {
+    super.finalize();
+    close();
+  }
+
+  public void close() 
+  {
+    mOpenHelper.close();
+  }
 
 
 
@@ -122,12 +241,12 @@ public class BragiDatabase {
     ContentValues cv = new ContentValues();
     cv.put(SlotColumns.SLUG, _slugify(name));
     cv.put(SlotColumns.NAME, name);
+    long id = -1;
     try {
-      long id = db.insertOrThrow(SlotColumns.TABLE_NAME, "", cv);
-      return id;
+      id = db.insertOrThrow(SlotColumns.TABLE_NAME, "", cv);
     } catch (SQLException e) {
-      return -1;
     }
+    return id;
   }
 
   public boolean updateSlot(long slot_id, String new_name)
@@ -150,35 +269,54 @@ public class BragiDatabase {
 
 
 
+  public ProfileModel getProfile(long profile_id) 
+  {
+    SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+    Cursor c = db.query(ProfileColumns.TABLE_NAME, ProfileColumns.DEFAULT_PROJECTION, 
+      ProfileColumns._ID+"=?", new String[] {String.valueOf(profile_id)},
+      null,null, ProfileColumns.DEFAULT_SORT_ORDER);
+    if (!c.moveToFirst())
+      return null;
+    ProfileModel ret = new ProfileModel(c);
+    c.close();
+
+    ret.slots = new HashMap<Long,Uri>();
+    Cursor slots_c = getProfileSlots(profile_id);
+    int uri_idx = slots_c.getColumnIndex(ProfileSlotColumns.URI);
+    int slot_idx = slots_c.getColumnIndex(ProfileSlotColumns.SLOT_ID);
+    while (slots_c.moveToNext()) {
+      ret.slots.put( slots_c.getLong(slot_idx), Uri.parse(slots_c.getString(uri_idx)) );
+    }
+    slots_c.close();
+    db.close();
+
+    return ret;
+  }
+  public Cursor getProfileSlots(long profile_id)
+  {
+    SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+    return db.query(ProfileSlotColumns.TABLE_NAME, ProfileSlotColumns.DEFAULT_PROJECTION, 
+      ProfileSlotColumns.PROFILE_ID+"=?", new String[] {String.valueOf(profile_id)},
+      null,null, ProfileSlotColumns.DEFAULT_SORT_ORDER);
+  }
+
   public Cursor getAllProfiles() {
     SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-    return db.query(ProfileColumns.TABLE_NAME, new String[] {
-      ProfileColumns._ID,
-      ProfileColumns.NAME,
-      ProfileColumns.SILENT_MODE,
-      ProfileColumns.VIBRATE_RING,
-      ProfileColumns.VIBRATE_NOTIFY,
-      ProfileColumns.VOLUME_RINGER,
-      ProfileColumns.VOLUME_MUSIC,
-      ProfileColumns.VOLUME_CALL,
-      ProfileColumns.VOLUME_SYSTEM,
-      ProfileColumns.VOLUME_ALARM,
-      ProfileColumns.VOLUME_NOTIFY,
-    }, null,null,null,null, ProfileColumns.DEFAULT_SORT_ORDER);
+    return db.query(ProfileColumns.TABLE_NAME, ProfileColumns.DEFAULT_PROJECTION, null,null,null,null, ProfileColumns.DEFAULT_SORT_ORDER);
   }
 
   public long addProfile(String name) {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
     ContentValues cv = new ContentValues();
     cv.put(SlotColumns.NAME, name);
+    long profile_id = -1;
     try {
-      long profile_id = db.insertOrThrow(ProfileColumns.TABLE_NAME, "", cv);
+      profile_id = db.insertOrThrow(ProfileColumns.TABLE_NAME, "", cv);
       synchronizeProfileSlots(profile_id);
-      return profile_id;
     } catch (SQLException e) {
       Log.e("BragiDatabase", e.toString());
-      return -1;
     }
+    return profile_id;
   }
 
   public void synchronizeProfileSlots(long profile_id) 
@@ -203,12 +341,12 @@ public class BragiDatabase {
     StringBuilder qmarks = new StringBuilder();
     for (i=0; i < l; i++) {
       qmarks.append("?");
-      if (i < l) qmarks.append(",");
+      if (i < l-1) qmarks.append(",");
     }
 
     // delete nonexistent slots
     db.delete(ProfileSlotColumns.TABLE_NAME, 
-      ProfileSlotColumns.PROFILE_ID+"=? AND "+ProfileSlotColumns.SLOT_ID+" IS NOT IN (" + qmarks.toString() + ")", query_args);
+      ProfileSlotColumns.PROFILE_ID+"=? AND "+ProfileSlotColumns.SLOT_ID+" NOT IN (" + qmarks.toString() + ")", query_args);
   }
 
   public boolean updateProfile(long profile_id, ContentValues cv) 
@@ -231,14 +369,14 @@ public class BragiDatabase {
 
     SQLiteStatement stmt = db.compileStatement("SELECT COUNT(*) FROM "+ProfileSlotColumns.TABLE_NAME
       +" WHERE "+ProfileSlotColumns.PROFILE_ID+"=? AND "+ProfileSlotColumns.SLOT_ID+"=?");
-    stmt.bindLong(0, profile_id);
-    stmt.bindLong(1, slot_id);
-    long row_exists = stmt.simpleQueryForLong();
+    stmt.bindLong(1, profile_id);
+    stmt.bindLong(2, slot_id);
+    long row_count = stmt.simpleQueryForLong();
 
     ContentValues cv = new ContentValues();
-    cv.put(ProfileSlotColumns.URI, uri.toString());
+    cv.put(ProfileSlotColumns.URI, uri != null ? uri.toString() : null);
 
-    if (row_exists < 1) {
+    if (row_count < 1) {
       int ret = db.update(ProfileSlotColumns.TABLE_NAME, cv, 
         ProfileSlotColumns.PROFILE_ID+"=? AND "+ProfileSlotColumns.SLOT_ID+"=?", 
         new String[] { String.valueOf(profile_id), String.valueOf(slot_id) }
@@ -256,7 +394,6 @@ public class BragiDatabase {
 
     return false;
   }
-
 
 
 

@@ -64,6 +64,12 @@ public class SlotEditorActivity extends ListActivity
         registerForContextMenu(mListView);
     }
 
+    public void finish() {
+      mSlotCursor.close();
+      mDbHelper.close();
+      super.finish();
+    }
+
     public void onClick(View v) {
         long id = v.getId();
         if (id == R.id.actionbar_logo || id == R.id.actionbar_button2) {
