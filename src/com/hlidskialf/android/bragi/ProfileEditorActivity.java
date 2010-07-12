@@ -106,7 +106,7 @@ public class ProfileEditorActivity extends PreferenceActivity
     /*Preference.OnPreferenceChangeListener*/
     public boolean onPreferenceChange(Preference preference, Object newValue) 
     {
-      Log.v("BragiPreferenceChanged", preference.getKey() +" = " + newValue.getClass().toString());
+      Log.v("BragiPreferenceChanged", preference.getKey() +" = " + newValue.toString());
 
       Uri uri = Uri.parse(newValue.toString());
       SlotBucket bucket = _set_slot_ringtone(preference, uri, -1);
@@ -126,7 +126,6 @@ public class ProfileEditorActivity extends PreferenceActivity
         bucket.slot_id = slot_id;
       }
       
-      bucket.ring = null;
       if (uri != null) {
         bucket.ring = RingtoneManager.getRingtone(this, uri);
         pref.setSummary(bucket.ring.getTitle(this));
@@ -155,14 +154,13 @@ public class ProfileEditorActivity extends PreferenceActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
-      if (resultCode != RESULT_OK)
-        return;
-
       if (requestCode == REQUEST_VOLUME_SCREEN) {
         ContentValues values = data.getParcelableExtra(Bragi.EXTRA_PROFILE_VALUES);
         mProfile.updateValues(values);
         mDbHelper.updateProfile(mProfile.id, mProfile.contentValues());
       }
+
+      super.onActivityResult(requestCode, resultCode, data);
     }
 
 }
