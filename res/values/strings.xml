@@ -2,6 +2,7 @@
 <resources>
     <string name="bragi_label">Bragi</string>
     <string name="tonepicker_label">Tone Picker</string>
+    <string name="slotpicker_label">Bragi Slot Picker</string>
 
     <string name="activate">Activate</string>
     <string name="edit">Edit</string>

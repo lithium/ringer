@@ -23,6 +23,18 @@
             </intent-filter>
         </activity>
 
+
+        <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity"
+                  android:label="@string/slotpicker_label"
+                  android:theme="@style/Theme.Dialog.NoTitleBar"
+                  >
+            <intent-filter>
+                <action android:name="android.intent.action.RINGTONE_PICKER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
         <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity" 
                   android:theme="@android:style/Theme.NoTitleBar"/>
 
