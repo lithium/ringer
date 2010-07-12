@@ -8,9 +8,9 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 import android.net.Uri;
 import android.util.Log;
+import android.provider.Settings;
+import android.os.Build;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
@@ -30,6 +30,16 @@ public class Bragi
   public static void activateProfile(Context context, ContentResolver resolver, long profile_id)
   {
     BragiDatabase db = new BragiDatabase(context);
+
+    BragiDatabase.ProfileModel profile = db.getProfile(profile_id, false);
+
+    Settings.System.putString(resolver, Settings.System.RINGTONE, profile.default_ring);
+    Settings.System.putString(resolver, Settings.System.NOTIFICATION_SOUND, profile.default_notify);
+
+    if (Build.VERSION.SDK_INT >= 5) {
+      Settings.System.putString(resolver, Settings.System.ALARM_ALERT, profile.default_alarm);
+    }
+
     Cursor psc = db.getProfileSlots(profile_id);
     int idx_uri = psc.getColumnIndex(BragiDatabase.ProfileSlotColumns.URI);
     int idx_slot_id = psc.getColumnIndex(BragiDatabase.ProfileSlotColumns.SLOT_ID);

@@ -7,4 +7,17 @@
       android:summary="silent mode / vibrate / volume levels"
       />
 
+    <RingtonePreference android:key="default_ring"
+      android:persistent="false"
+      android:title="Default Ringtone"
+      />
+    <RingtonePreference android:key="default_notify"
+      android:persistent="false"
+      android:title="Default Notification"
+      />
+    <RingtonePreference android:key="default_alarm"
+      android:persistent="false"
+      android:title="Default Alarm Alert"
+      />
+
 </PreferenceScreen>

@@ -63,7 +63,7 @@ public class ProfileEditorActivity extends PreferenceActivity
         Intent caller = getIntent();
         long profile_id = caller.getLongExtra(Bragi.EXTRA_PROFILE_ID, -1);
         if (profile_id != -1)
-          mProfile = mDbHelper.getProfile(profile_id);
+          mProfile = mDbHelper.getProfile(profile_id, true);
 
         mSlotHash = new HashMap<Preference,SlotBucket>();
         PreferenceScreen screen = getPreferenceScreen();
@@ -87,9 +87,23 @@ public class ProfileEditorActivity extends PreferenceActivity
             screen.addPreference(pref);
         }
         slot_cursor.close();
+
+        Preference pref;
+        pref = screen.findPreference("default_ring");
+        pref.setOnPreferenceChangeListener(this);
+        _set_default_summary(pref, mProfile.default_ring);
+        pref = screen.findPreference("default_notify");
+        pref.setOnPreferenceChangeListener(this);
+        _set_default_summary(pref, mProfile.default_notify);
+        pref = screen.findPreference("default_alarm");
+        pref.setOnPreferenceChangeListener(this);
+        _set_default_summary(pref, mProfile.default_alarm);
+
+        
     }
 
     public void finish() {
+      mDbHelper.updateProfile(mProfile.id, mProfile.contentValues());
       mDbHelper.close();
       super.finish();
     }
@@ -108,15 +122,37 @@ public class ProfileEditorActivity extends PreferenceActivity
     {
       Log.v("BragiPreferenceChanged", preference.getKey() +" = " + newValue.toString());
 
-      Uri uri = Uri.parse(newValue.toString());
-      SlotBucket bucket = _set_slot_ringtone(preference, uri, -1);
+      String key = preference.getKey();
+      String uri_str = newValue.toString();
+      Uri uri = Uri.parse(uri_str);
 
-      if (! mDbHelper.updateProfileSlot(mProfile.id, bucket.slot_id, uri) ) {
-        Log.v("BragiProfileEditor", "failed to update profile");
+      if (key.equals("default_ring") || key.equals("default_notify") || key.equals("default_alarm")) {
+        if (key.equals("default_ring")) mProfile.default_ring = uri_str;
+        else if (key.equals("default_notify")) mProfile.default_notify = uri_str;
+        else if (key.equals("default_alarm")) mProfile.default_alarm = uri_str;
+        _set_default_summary(preference, uri_str);
       }
+      else { /* its a slot ringtone */
+        SlotBucket bucket = _set_slot_ringtone(preference, uri, -1);
+        if (! mDbHelper.updateProfileSlot(mProfile.id, bucket.slot_id, uri) ) {
+          Log.v("BragiProfileEditor", "failed to update profile");
+        }
+      }
+
       return false;
     }
 
+    private void _set_default_summary(Preference pref, String uri_str)
+    {
+      if (uri_str != null) {
+        Uri uri = Uri.parse( uri_str );
+        Ringtone ring = RingtoneManager.getRingtone(this, uri);
+        pref.setSummary(ring.getTitle(this));
+      } else {
+        pref.setSummary("***unset***");
+      }
+
+    }
 
     private SlotBucket _set_slot_ringtone(Preference pref, Uri uri, long slot_id) 
     {
@@ -125,7 +161,7 @@ public class ProfileEditorActivity extends PreferenceActivity
         bucket = new SlotBucket();
         bucket.slot_id = slot_id;
       }
-      
+     
       if (uri != null) {
         bucket.ring = RingtoneManager.getRingtone(this, uri);
         pref.setSummary(bucket.ring.getTitle(this));

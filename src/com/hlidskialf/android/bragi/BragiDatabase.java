@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class BragiDatabase {
   private static final String DATABASE_NAME = "bragi.db";
-  private static final int DATABASE_VERSION = 4;
+  private static final int DATABASE_VERSION = 000601;
 
   public static final String AUTHORITY = "com.hlidskialf.android.provider.bragi";
 
@@ -38,6 +38,9 @@ public class BragiDatabase {
 
 
     public static final String NAME = "name";
+    public static final String DEFAULT_RING = "default_ring";
+    public static final String DEFAULT_NOTIFY = "default_notification";
+    public static final String DEFAULT_ALARM = "default_alarm";
     public static final String SILENT_MODE = "silent_mode";
     public static final String VIBRATE_RING = "vibrate_ring";
     public static final String VIBRATE_NOTIFY = "vibrate_notify";
@@ -51,6 +54,9 @@ public class BragiDatabase {
     public static final String[] DEFAULT_PROJECTION = {
       ProfileColumns._ID,
       ProfileColumns.NAME,
+      ProfileColumns.DEFAULT_RING,
+      ProfileColumns.DEFAULT_NOTIFY,
+      ProfileColumns.DEFAULT_ALARM,
       ProfileColumns.SILENT_MODE,
       ProfileColumns.VIBRATE_RING,
       ProfileColumns.VIBRATE_NOTIFY,
@@ -82,6 +88,9 @@ public class BragiDatabase {
   public static final class ProfileModel {
     public long id = -1;
     public String name;
+    public String default_ring;
+    public String default_notify;
+    public String default_alarm;
     public int silent_mode;
     public int vibrate_ring;
     public int vibrate_notify;
@@ -100,6 +109,9 @@ public class BragiDatabase {
       int idx;
       if ((idx = c.getColumnIndex(ProfileColumns._ID)) != -1) this.id = c.getLong(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.NAME)) != -1) this.name = c.getString(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.DEFAULT_RING)) != -1) this.default_ring = c.getString(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.DEFAULT_NOTIFY)) != -1) this.default_notify = c.getString(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.DEFAULT_ALARM)) != -1) this.default_alarm = c.getString(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.SILENT_MODE)) != -1) this.silent_mode = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.VIBRATE_RING)) != -1) this.vibrate_ring = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.VIBRATE_NOTIFY)) != -1) this.vibrate_notify = c.getInt(idx);
@@ -112,6 +124,9 @@ public class BragiDatabase {
     }
     public void updateValues(ContentValues cv) {
       this.name = cv.getAsString(ProfileColumns.NAME);
+      this.default_ring = cv.getAsString(ProfileColumns.DEFAULT_RING);
+      this.default_notify = cv.getAsString(ProfileColumns.DEFAULT_NOTIFY);
+      this.default_alarm = cv.getAsString(ProfileColumns.DEFAULT_ALARM);
       this.silent_mode = cv.getAsInteger(ProfileColumns.SILENT_MODE);
       this.vibrate_ring = cv.getAsInteger(ProfileColumns.VIBRATE_RING);
       this.vibrate_notify = cv.getAsInteger(ProfileColumns.VIBRATE_NOTIFY);
@@ -126,6 +141,9 @@ public class BragiDatabase {
       ContentValues cv = new ContentValues();
       cv.put(ProfileColumns._ID, this.id);
       cv.put(ProfileColumns.NAME, this.name);
+      cv.put(ProfileColumns.DEFAULT_RING, this.default_ring);
+      cv.put(ProfileColumns.DEFAULT_NOTIFY, this.default_notify);
+      cv.put(ProfileColumns.DEFAULT_ALARM, this.default_alarm);
       cv.put(ProfileColumns.SILENT_MODE, this.silent_mode);
       cv.put(ProfileColumns.VIBRATE_RING, this.vibrate_ring);
       cv.put(ProfileColumns.VIBRATE_NOTIFY, this.vibrate_notify);
@@ -158,6 +176,9 @@ public class BragiDatabase {
       q = "CREATE TABLE " + ProfileColumns.TABLE_NAME + "( "
         + ProfileColumns._ID + " INTEGER PRIMARY KEY, "
         + ProfileColumns.NAME + " TEXT UNIQUE, "
+        + ProfileColumns.DEFAULT_RING + " TEXT, "
+        + ProfileColumns.DEFAULT_NOTIFY + " TEXT, "
+        + ProfileColumns.DEFAULT_ALARM + " TEXT, "
         + ProfileColumns.SILENT_MODE + " INTEGER, "
         + ProfileColumns.VIBRATE_RING + " INTEGER, "
         + ProfileColumns.VIBRATE_NOTIFY + " INTEGER, "
@@ -245,7 +266,7 @@ public class BragiDatabase {
 
 
 
-  public ProfileModel getProfile(long profile_id) 
+  public ProfileModel getProfile(long profile_id, boolean hash_slots) 
   {
     SQLiteDatabase db = mOpenHelper.getReadableDatabase();
     Cursor c = db.query(ProfileColumns.TABLE_NAME, ProfileColumns.DEFAULT_PROJECTION, 
@@ -256,14 +277,16 @@ public class BragiDatabase {
     ProfileModel ret = new ProfileModel(c);
     c.close();
 
-    ret.slots = new HashMap<Long,Uri>();
-    Cursor slots_c = getProfileSlots(profile_id);
-    int uri_idx = slots_c.getColumnIndex(ProfileSlotColumns.URI);
-    int slot_idx = slots_c.getColumnIndex(ProfileSlotColumns.SLOT_ID);
-    while (slots_c.moveToNext()) {
-      ret.slots.put( slots_c.getLong(slot_idx), Uri.parse(slots_c.getString(uri_idx)) );
+    if (hash_slots) {
+      ret.slots = new HashMap<Long,Uri>();
+      Cursor slots_c = getProfileSlots(profile_id);
+      int uri_idx = slots_c.getColumnIndex(ProfileSlotColumns.URI);
+      int slot_idx = slots_c.getColumnIndex(ProfileSlotColumns.SLOT_ID);
+      while (slots_c.moveToNext()) {
+        ret.slots.put( slots_c.getLong(slot_idx), Uri.parse(slots_c.getString(uri_idx)) );
+      }
+      slots_c.close();
     }
-    slots_c.close();
     db.close();
 
     return ret;
