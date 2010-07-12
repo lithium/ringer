@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.util.Log;
 import android.provider.Settings;
@@ -31,14 +32,34 @@ public class Bragi
   {
     BragiDatabase db = new BragiDatabase(context);
 
+    AudioManager audio = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
     BragiDatabase.ProfileModel profile = db.getProfile(profile_id, false);
+
 
     Settings.System.putString(resolver, Settings.System.RINGTONE, profile.default_ring);
     Settings.System.putString(resolver, Settings.System.NOTIFICATION_SOUND, profile.default_notify);
+    if (Build.VERSION.SDK_INT >= 5) Settings.System.putString(resolver, Settings.System.ALARM_ALERT, profile.default_alarm);
 
-    if (Build.VERSION.SDK_INT >= 5) {
-      Settings.System.putString(resolver, Settings.System.ALARM_ALERT, profile.default_alarm);
-    }
+    if (profile.silent_mode == 0) audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+    else if (profile.silent_mode == 1) audio.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+    else if (profile.silent_mode == 2) audio.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+
+    if (profile.vibrate_ring == 0) audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_OFF);
+    else if (profile.vibrate_ring == 1) audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ON);
+    else if (profile.vibrate_ring == 2) audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_RINGER, AudioManager.VIBRATE_SETTING_ONLY_SILENT);
+
+    if (profile.vibrate_notify == 0) audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_NOTIFICATION, AudioManager.VIBRATE_SETTING_OFF);
+    else if (profile.vibrate_notify == 1) audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_NOTIFICATION, AudioManager.VIBRATE_SETTING_ON);
+    else if (profile.vibrate_notify == 2) audio.setVibrateSetting(AudioManager.VIBRATE_TYPE_NOTIFICATION, AudioManager.VIBRATE_SETTING_ONLY_SILENT);
+
+    audio.setStreamVolume(AudioManager.STREAM_RING, profile.volume_ringer, 0);
+    audio.setStreamVolume(AudioManager.STREAM_MUSIC, profile.volume_music, 0);
+    audio.setStreamVolume(AudioManager.STREAM_VOICE_CALL, profile.volume_call, 0);
+    audio.setStreamVolume(AudioManager.STREAM_SYSTEM, profile.volume_system, 0);
+    audio.setStreamVolume(AudioManager.STREAM_ALARM, profile.volume_alarm, 0);
+    audio.setStreamVolume(AudioManager.STREAM_NOTIFICATION, profile.volume_notify, 0);
+
+
 
     Cursor psc = db.getProfileSlots(profile_id);
     int idx_uri = psc.getColumnIndex(BragiDatabase.ProfileSlotColumns.URI);
