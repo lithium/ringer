@@ -96,7 +96,7 @@ public class BragiActivity extends ListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
-      activate_profile(position);
+      activate_profile(position,id);
     }
 
     @Override
@@ -104,8 +104,8 @@ public class BragiActivity extends ListActivity
     {
       super.onCreateContextMenu(menu,v,menuInfo);
 
-      menu.add(0, MENU_ACTIVATE_ID, 0, R.string.activate);
       menu.add(0, MENU_EDIT_ID, 0, R.string.edit);
+      menu.add(0, MENU_ACTIVATE_ID, 0, R.string.activate);
       menu.add(0, MENU_DELETE_ID, 0, R.string.delete);
     }
 
@@ -142,9 +142,13 @@ public class BragiActivity extends ListActivity
       startActivityForResult(intent, RESULT_EDIT_PROFILE);
     }
 
-    protected void activate_profile(int position) 
+    protected void activate_profile(int position, long id) 
     {
         Log.v("Bragi", "activate!");
         setSelection(position);
+
+        //mProfileCursor.moveToPosition(position);
+        //BragiDatabase.ProfileModel profile = new BragiDatabase.ProfileModel(mProfileCursor);
+        Bragi.activateProfile(this, getContentResolver(), id);
     }
 }

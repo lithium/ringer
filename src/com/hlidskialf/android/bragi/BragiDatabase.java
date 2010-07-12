@@ -12,7 +12,6 @@ import android.util.Log;
 import android.provider.BaseColumns;
 import android.net.Uri;
 
-import java.util.Map;
 import java.util.HashMap;
 
 
@@ -92,7 +91,7 @@ public class BragiDatabase {
     public int volume_system;
     public int volume_alarm;
     public int volume_notify;
-    public Map<Long,Uri> slots;
+    public HashMap<Long,Uri> slots;
 
     public ProfileModel() {}
     public ProfileModel(Cursor c) { hydrate(c); }
