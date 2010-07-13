@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,16 +43,16 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   public long mSelectedId = -1;
                                                            
   private static final String[] BUILTIN_NAMES = new String[] { "Ringtones","Notifications","Alarms", };
-  private static final int INDEX_DEFAULTS=0;
-  private static final int INDEX_FIRST_BUILTIN=1;
-  private static final int INDEX_RINGTONES=1;
-  private static final int INDEX_NOTIFICATIONS=2;
-  private static final int INDEX_ALARMS=3;
-  private static final int INDEX_FIRST_ALBUM=4;
+  //private static final int INDEX_DEFAULTS=0;
+  private static final int INDEX_FIRST_BUILTIN=0;
+  private static final int INDEX_RINGTONES=0;
+  private static final int INDEX_NOTIFICATIONS=1;
+  private static final int INDEX_ALARMS=2;
+  private static final int INDEX_FIRST_ALBUM=3;
   private static int INDEX_CONTENTS;
   private static int INDEX_PICKERS;
 
-  private Object[] mDefaults;
+  //private Object[] mDefaults;
   private Object[] mRingtoneCache;
   private Object[] mNotifyCache;
   private Object[] mAlarmCache;
@@ -79,14 +80,14 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   }
 
 
-  abstract class BaseCache {
+  public abstract class BaseCache {
     public String name;
     public long id;
 
     public class ViewHolder {
-      TextView label;
+      CheckedTextView label;
       ImageView icon;
-      ImageView selected;
+      //ImageView selected;
     };
 
     public View getView(View convertView, ViewGroup parent)
@@ -96,8 +97,8 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
         convertView = mInflater.inflate(R.layout.tonepicker_child, null);
         holder = new ViewHolder();
         holder.icon = (ImageView)convertView.findViewById(android.R.id.icon1);
-        holder.label = (TextView)convertView.findViewById(android.R.id.text1);
-        holder.selected = (ImageView)convertView.findViewById(android.R.id.icon2);
+        holder.label = (CheckedTextView)convertView.findViewById(android.R.id.text1);
+        //holder.selected = (ImageView)convertView.findViewById(android.R.id.icon2);
         convertView.setTag(holder);
 
       } else {
@@ -123,7 +124,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       holder.icon.setImageDrawable(icon);
       holder.icon.setVisibility(View.VISIBLE);
 
-      holder.selected.setVisibility(View.GONE);
+      //holder.selected.setVisibility(View.GONE);
 
       return convertView;
 
@@ -136,6 +137,8 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       convertView = super.getView(convertView,parent);
       ViewHolder holder = (ViewHolder)convertView.getTag();
 
+      holder.label.setChecked(mSelectedId == id);
+        /*
       holder.selected.setVisibility(View.VISIBLE);
       if (mSelectedId == id) {
         holder.selected.setImageResource(android.R.drawable.button_onoff_indicator_on);
@@ -143,6 +146,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       else {
         holder.selected.setImageResource(android.R.drawable.button_onoff_indicator_off);
       }
+      */
       return convertView;
     }
   }
@@ -163,6 +167,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
     mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+    /*
     if (existing_uri == null) {
       mDefaults = new DefaultCache[] { new DefaultCache("Silence",null) };
     }
@@ -170,6 +175,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       Ringtone tone = RingtoneManager.getRingtone(context, mExistingUri);
       mDefaults = new DefaultCache[] { new DefaultCache("Current: "+tone.getTitle(context), mExistingUri), new DefaultCache("Silence",null) };
     }
+    */
 
 
     mRingtoneCache = _cache_builtins(RingtoneManager.TYPE_RINGTONE);
@@ -238,24 +244,20 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       return mAlarmCache;
     }
 
-    if (groupPosition == INDEX_DEFAULTS) {
-      return mDefaults;
-    }
+    //if (groupPosition == INDEX_DEFAULTS) {
+    //  return mDefaults;
+    //}
 
     return null;
   }
   public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
   {
     if (convertView == null) {
-      convertView = new TextView(mContext);
-
+      convertView = mInflater.inflate(R.layout.tonepicker_group, null);
+      TextView tv = (TextView)convertView.findViewById(android.R.id.text1);
+      convertView.setTag(tv);
     }
-    TextView convert = (TextView)convertView;
-    convert.setSingleLine();
-    convert.setHorizontallyScrolling(true);
-    convert.setEllipsize( TextUtils.TruncateAt.MARQUEE );
-    convert.setHeight(32);
-    convert.setPadding(32,0,0,0);
+    TextView tv = (TextView)convertView.getTag();
     String text = null;
 
     if (groupPosition == INDEX_PICKERS) 
@@ -269,13 +271,15 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     else 
     if (groupPosition >= INDEX_FIRST_BUILTIN)
       text = BUILTIN_NAMES[groupPosition - INDEX_FIRST_BUILTIN];
+    /*
     else 
     if (groupPosition == 0)
       text = "Defaults";
+    */
       
-    convert.setText(text);
+    tv.setText(text);
 
-    return convert;
+    return convertView;
   }
 
 
@@ -299,7 +303,6 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   {
     BaseCache obj = (BaseCache)getChild(groupPosition, childPosition);
     obj.id = getChildId(groupPosition, childPosition);
-    Log.v("TonePicker", "child_id = "+String.valueOf(obj.id));
     return obj.getView(convertView, parent);
 
   }

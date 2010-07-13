@@ -14,24 +14,37 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.CheckedTextView;
 import java.io.IOException;
 
 import com.hlidskialf.android.bragi.R;
 
-public class TonePickerActivity extends ExpandableListActivity {
+public class TonePickerActivity extends ExpandableListActivity 
+        implements View.OnClickListener
+{
     public static final int REQUEST_GET_CONTENT=1;
 
     private TonePickerAdapter mAdapter; 
     private ExpandableListView mListView;
+    private LayoutInflater mInflater;
 
     private Intent mInitialIntent;
     private Uri mSelectedUri;
     private MediaPlayer mMediaPlayer;
+
+
+    private class HeaderViewHolder
+    {
+      CheckedTextView text1;
+      Uri uri;
+    }
+    private HeaderViewHolder mHeaderSilent, mHeaderExisting, mHeaderDefault;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -55,14 +68,52 @@ public class TonePickerActivity extends ExpandableListActivity {
 
         Intent intent = getIntent();
         Uri existing_uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI);
+        Uri default_uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI);
+
+
+        mListView = getExpandableListView();
+        mInflater = getLayoutInflater();
+
+        
+        mHeaderSilent = _add_header_view("Silent", null);
+
+        if (existing_uri != null) {
+          mHeaderExisting = _add_header_view("Existing", existing_uri);
+        }
+        if (default_uri != null) {
+          mHeaderDefault = _add_header_view("Default", default_uri);
+        }
 
         mAdapter = new TonePickerAdapter((Context)this, existing_uri, getComponentName());
         setListAdapter(mAdapter);
 
 
-        mListView = getExpandableListView();
-        mListView.expandGroup(0);
+        mListView.setItemsCanFocus(false);
+        mListView.setChoiceMode(ExpandableListView.CHOICE_MODE_SINGLE);
+        //mListView.expandGroup(0);
         
+    }
+
+    private HeaderViewHolder _add_header_view(String label, Uri uri)
+    {
+        View view;
+        HeaderViewHolder holder;
+
+        view = mInflater.inflate(R.layout.tonepicker_child,null);
+        view.setOnClickListener(this);
+        holder = new HeaderViewHolder();
+        holder.text1 = (CheckedTextView)view.findViewById(android.R.id.text1);
+        if (uri == null) {
+          holder.text1.setText(label);
+        }
+        else {
+          Ringtone tone = RingtoneManager.getRingtone(this, uri);
+          holder.text1.setText(label+": "+tone.getTitle(this));
+        }
+        view.setTag(holder);
+
+        mListView.addHeaderView(view, uri, true);
+        return holder;
     }
 
     @Override
@@ -72,7 +123,6 @@ public class TonePickerActivity extends ExpandableListActivity {
       if (TonePickerAdapter.AppCache.class.isInstance(obj)) {
         TonePickerAdapter.AppCache ac = (TonePickerAdapter.AppCache)obj;
         startActivityForResult(ac.intent, REQUEST_GET_CONTENT);
-        return true;
       }
       else
       if (TonePickerAdapter.RingCache.class.isInstance(obj)) {
@@ -84,12 +134,38 @@ public class TonePickerActivity extends ExpandableListActivity {
             playRingtone(rc.uri);
         }
 
+        TonePickerAdapter.BaseCache.ViewHolder holder = (TonePickerAdapter.BaseCache.ViewHolder)v.getTag();
+        holder.label.setChecked(true);
         mAdapter.mSelectedId = mAdapter.getChildId(groupPosition,childPosition);
         mSelectedUri = rc.uri;
         mListView.invalidateViews();
-        return true;
+        _clear_header_views();
       }
       return false;
+    }
+
+    private void _clear_header_views()
+    {
+      mHeaderSilent.text1.setChecked(false);
+      if (mHeaderExisting != null) mHeaderExisting.text1.setChecked(false);
+      if (mHeaderDefault != null) mHeaderDefault.text1.setChecked(false);
+    }
+
+    /* header view click*/
+    public void onClick(View v)
+    {
+      _clear_header_views();
+
+
+      HeaderViewHolder holder = (HeaderViewHolder)v.getTag(); 
+      holder.text1.setChecked(true);
+      mSelectedUri = holder.uri;
+      mAdapter.mSelectedId = -1;
+      mListView.invalidateViews();
+
+      stopRingtone();
+      if (holder.uri != null) 
+        playRingtone(holder.uri);
     }
 
     @Override
