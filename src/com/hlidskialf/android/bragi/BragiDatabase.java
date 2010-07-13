@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class BragiDatabase {
   private static final String DATABASE_NAME = "bragi.db";
-  private static final int DATABASE_VERSION = 000601;
+  private static final int DATABASE_VERSION = 000701;
 
   public static final String AUTHORITY = "com.hlidskialf.android.provider.bragi";
 
