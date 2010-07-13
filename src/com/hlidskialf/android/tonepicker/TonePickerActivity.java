@@ -108,7 +108,8 @@ public class TonePickerActivity extends ExpandableListActivity
         }
         else {
           Ringtone tone = RingtoneManager.getRingtone(this, uri);
-          holder.text1.setText(label+": "+tone.getTitle(this));
+          if (tone != null)
+            holder.text1.setText(label+": "+tone.getTitle(this));
         }
         view.setTag(holder);
 
