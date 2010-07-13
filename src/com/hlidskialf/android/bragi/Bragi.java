@@ -67,7 +67,10 @@ public class Bragi
     while (psc.moveToNext()) {
       
       long slot_id = psc.getLong(idx_slot_id);
-      Uri uri = Uri.parse( psc.getString(idx_uri) );
+      String uri_str = psc.getString(idx_uri);
+      if (uri_str == null)
+        continue;
+      Uri uri = Uri.parse( uri_str );
 
       Cursor c = resolver.query(uri, new String[] {
         MediaStore.Audio.Media._ID,
