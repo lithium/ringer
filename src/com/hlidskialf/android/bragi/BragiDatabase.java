@@ -283,7 +283,8 @@ public class BragiDatabase {
       int uri_idx = slots_c.getColumnIndex(ProfileSlotColumns.URI);
       int slot_idx = slots_c.getColumnIndex(ProfileSlotColumns.SLOT_ID);
       while (slots_c.moveToNext()) {
-        ret.slots.put( slots_c.getLong(slot_idx), Uri.parse(slots_c.getString(uri_idx)) );
+        String uri_str = slots_c.getString(uri_idx);
+        ret.slots.put( slots_c.getLong(slot_idx), uri_str != null ? Uri.parse(uri_str) : null );
       }
       slots_c.close();
     }
