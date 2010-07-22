@@ -194,7 +194,7 @@ public class ProfileEditorActivity extends PreferenceActivity
         mDbHelper.updateProfile(mProfile.id, mProfile.contentValues());
       }
       else 
-      if (requestCode == RESULT_TONEPICKER) {
+      if (requestCode == RESULT_TONEPICKER && data != null) {
         Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
         String key = mLastPreference.getKey();
 
