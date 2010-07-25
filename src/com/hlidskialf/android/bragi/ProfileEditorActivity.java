@@ -128,6 +128,7 @@ public class ProfileEditorActivity extends PreferenceActivity
     {
       mLastPreference = preference;
       Intent intent = new Intent(this, TonePickerActivity.class);
+      intent.putExtra(Bragi.EXTRA_STARTED_FROM_BRAGI, true);
       startActivityForResult(intent, RESULT_TONEPICKER);
       return true;
     }
@@ -188,25 +189,29 @@ public class ProfileEditorActivity extends PreferenceActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
-      if (requestCode == RESULT_VOLUME_SCREEN) {
-        ContentValues values = data.getParcelableExtra(Bragi.EXTRA_PROFILE_VALUES);
-        mProfile.updateValues(values);
-        mDbHelper.updateProfile(mProfile.id, mProfile.contentValues());
-      }
-      else 
-      if (requestCode == RESULT_TONEPICKER && data != null) {
-        Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-        String key = mLastPreference.getKey();
+      if (data != null) {
 
-        if (key.startsWith("default_")) {
-          String uri_str = uri != null ? uri.toString() : "";
-          if (key.equals("default_ring")) mProfile.default_ring = uri_str;
-          else if (key.equals("default_notify")) mProfile.default_notify = uri_str;
-          else if (key.equals("default_alarm")) mProfile.default_alarm = uri_str;
-          _set_default_summary(mLastPreference, uri_str);
-        } else {
-          _set_slot_ringtone(mLastPreference, uri, -1);
+        if (requestCode == RESULT_VOLUME_SCREEN) {
+          ContentValues values = data.getParcelableExtra(Bragi.EXTRA_PROFILE_VALUES);
+          mProfile.updateValues(values);
+          mDbHelper.updateProfile(mProfile.id, mProfile.contentValues());
         }
+        else 
+        if (requestCode == RESULT_TONEPICKER) {
+          Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+          String key = mLastPreference.getKey();
+
+          if (key.startsWith("default_")) {
+            String uri_str = uri != null ? uri.toString() : "";
+            if (key.equals("default_ring")) mProfile.default_ring = uri_str;
+            else if (key.equals("default_notify")) mProfile.default_notify = uri_str;
+            else if (key.equals("default_alarm")) mProfile.default_alarm = uri_str;
+            _set_default_summary(mLastPreference, uri_str);
+          } else {
+            _set_slot_ringtone(mLastPreference, uri, -1);
+          }
+        }
+
       }
 
       super.onActivityResult(requestCode, resultCode, data);

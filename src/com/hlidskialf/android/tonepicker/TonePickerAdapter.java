@@ -32,6 +32,8 @@ import java.util.Map.Entry;
 import android.util.Log;
 
 import com.hlidskialf.android.bragi.R;
+import com.hlidskialf.android.bragi.BragiDatabase;
+import com.hlidskialf.android.bragi.Bragi;
 
 
 public class TonePickerAdapter extends BaseExpandableListAdapter {
@@ -39,20 +41,22 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   private Uri mExistingUri;                                
   private ComponentName mExcludeApp;
   private LayoutInflater mInflater;
+  private boolean mShowSlots;
 
   public long mSelectedId = -1;
                                                            
   private static final String[] BUILTIN_NAMES = new String[] { "Ringtones","Notifications","Alarms", };
-  //private static final int INDEX_DEFAULTS=0;
-  private static final int INDEX_FIRST_BUILTIN=0;
-  private static final int INDEX_RINGTONES=0;
-  private static final int INDEX_NOTIFICATIONS=1;
-  private static final int INDEX_ALARMS=2;
-  private static final int INDEX_FIRST_ALBUM=3;
+
+  private static int INDEX_SLOTS;
+  private static int INDEX_FIRST_BUILTIN;
+  private static int INDEX_RINGTONES;
+  private static int INDEX_NOTIFICATIONS;
+  private static int INDEX_ALARMS;
+  private static int INDEX_FIRST_ALBUM;
   private static int INDEX_CONTENTS;
   private static int INDEX_PICKERS;
 
-  //private Object[] mDefaults;
+  private Object[] mSlotCache;
   private Object[] mRingtoneCache;
   private Object[] mNotifyCache;
   private Object[] mAlarmCache;
@@ -153,29 +157,30 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   class BuiltinRingCache extends RingCache {
     Ringtone ringtone;
   }
-  class DefaultCache extends RingCache {
-    public DefaultCache(String new_name, Uri new_uri) { name = new_name; uri = new_uri; }
+  class SlotCache extends RingCache {
+    public SlotCache(String new_name, Uri new_uri) { name = new_name; uri = new_uri; }
   }
   
 
-  public TonePickerAdapter(Context context, Uri existing_uri, ComponentName exclude_app)
+  public TonePickerAdapter(Context context, ComponentName exclude_app, boolean show_bragi_slots)
   {
     mContext = context;
-    mExistingUri = existing_uri;
     mExcludeApp = exclude_app;
-
-
+    mShowSlots = show_bragi_slots;
     mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    /*
-    if (existing_uri == null) {
-      mDefaults = new DefaultCache[] { new DefaultCache("Silence",null) };
+    if (mShowSlots) {
+        INDEX_SLOTS=0;
+        mSlotCache = _cache_slots();
     }
     else {
-      Ringtone tone = RingtoneManager.getRingtone(context, mExistingUri);
-      mDefaults = new DefaultCache[] { new DefaultCache("Current: "+tone.getTitle(context), mExistingUri), new DefaultCache("Silence",null) };
+        INDEX_SLOTS=-1;
     }
-    */
+    INDEX_FIRST_BUILTIN=INDEX_SLOTS+1;
+    INDEX_RINGTONES=INDEX_FIRST_BUILTIN+0;
+    INDEX_NOTIFICATIONS=INDEX_FIRST_BUILTIN+1;
+    INDEX_ALARMS=INDEX_FIRST_BUILTIN+2;
+    INDEX_FIRST_ALBUM=INDEX_FIRST_BUILTIN+3;
 
 
     mRingtoneCache = _cache_builtins(RingtoneManager.TYPE_RINGTONE);
@@ -185,10 +190,8 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     _cache_album_names();
 
     Intent intent;
-    
     intent = new Intent(Intent.ACTION_GET_CONTENT) .setType("audio/*") .addCategory(Intent.CATEGORY_OPENABLE);
     mContentIntents = _cache_intents(intent);
-
     intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
     mPickerIntents = _cache_intents(intent);
 
@@ -213,7 +216,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   }
   public int getGroupCount()
   {
-    int count = INDEX_FIRST_ALBUM; //defaults + builtins
+    int count = INDEX_FIRST_ALBUM; //slots + builtins
     if (mMusicCache != null)
       count += mMusicCache.size();
 
@@ -233,20 +236,18 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     if (groupPosition >= INDEX_FIRST_ALBUM) {
       return mMusicCache.objects[groupPosition - INDEX_FIRST_ALBUM];
     }
-
-    if (groupPosition == INDEX_RINGTONES) {
-      return mRingtoneCache;
+    if (groupPosition == INDEX_ALARMS) {
+      return mAlarmCache;
     }
     if (groupPosition == INDEX_NOTIFICATIONS) {
       return mNotifyCache;
     }
-    if (groupPosition == INDEX_ALARMS) {
-      return mAlarmCache;
+    if (groupPosition == INDEX_RINGTONES) {
+      return mRingtoneCache;
     }
-
-    //if (groupPosition == INDEX_DEFAULTS) {
-    //  return mDefaults;
-    //}
+    if (mShowSlots && groupPosition == INDEX_SLOTS) {
+      return mSlotCache;
+    }
 
     return null;
   }
@@ -271,11 +272,9 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     else 
     if (groupPosition >= INDEX_FIRST_BUILTIN)
       text = BUILTIN_NAMES[groupPosition - INDEX_FIRST_BUILTIN];
-    /*
     else 
-    if (groupPosition == 0)
-      text = "Defaults";
-    */
+    if (mShowSlots && groupPosition == INDEX_SLOTS)
+      text = "Bragi Slots";
       
     tv.setText(text);
 
@@ -308,6 +307,26 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   }
 
 
+  private Object[] _cache_slots() 
+  {
+    ArrayList<SlotCache> slots = new ArrayList<SlotCache>();
+    BragiDatabase db = new BragiDatabase(mContext);
+    Cursor cursor = db.getAllSlots();
+    final int slot_id_idx = cursor.getColumnIndexOrThrow(BragiDatabase.SlotColumns._ID);
+    final int slot_name_idx = cursor.getColumnIndexOrThrow(BragiDatabase.SlotColumns.NAME);
+    int l = cursor.getCount();
+    while (cursor.moveToNext()) {
+        long slot_id = cursor.getLong(slot_id_idx);
+        Uri uri = Bragi.getUriForSlot(slot_id);
+        String name = cursor.getString(slot_name_idx);
+        SlotCache slot = new SlotCache(name, uri);
+        slots.add(slot);
+    }
+    cursor.close();
+    db.close();
+    return slots.toArray();
+
+  }
 
   private Object[] _cache_builtins(int ringtone_type) 
   {
@@ -414,5 +433,6 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
       return cache.toArray();
   }
+
 
 }

@@ -25,7 +25,6 @@ public class SlotEditorActivity extends ListActivity
     private Cursor mSlotCursor;
     private int mColIdx_slot_name;
     private Intent mIntent;
-    private boolean mRunningSlotPicker;
 
     private static final int MENU_EDIT_ID=1;
     private static final int MENU_DELETE_ID=2;
@@ -39,7 +38,6 @@ public class SlotEditorActivity extends ListActivity
 
         mIntent = getIntent();
         String action = mIntent.getAction();
-        mRunningSlotPicker = action != null ? action.equals(RingtoneManager.ACTION_RINGTONE_PICKER) : false;
 
         ImageView v;
         v = (ImageView)findViewById(R.id.actionbar_logo);
@@ -100,16 +98,7 @@ public class SlotEditorActivity extends ListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
-      if (mRunningSlotPicker) {
-        Intent intent = new Intent();
-        Uri uri = Bragi.getUriForSlot(id);
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, uri);
-        setResult(RESULT_OK, intent);
-        finish();
-      }
-      else {
-        rename_slot(position, id);
-      }
+      rename_slot(position, id);
     }
 
     protected void rename_slot(int position, long id)

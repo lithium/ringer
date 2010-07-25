@@ -24,6 +24,7 @@ import android.widget.CheckedTextView;
 import java.io.IOException;
 
 import com.hlidskialf.android.bragi.R;
+import com.hlidskialf.android.bragi.Bragi;
 
 public class TonePickerActivity extends ExpandableListActivity 
         implements View.OnClickListener
@@ -69,6 +70,7 @@ public class TonePickerActivity extends ExpandableListActivity
         Intent intent = getIntent();
         Uri existing_uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI);
         Uri default_uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI);
+        boolean show_bragi_slots = ! intent.getBooleanExtra(Bragi.EXTRA_STARTED_FROM_BRAGI, false);
 
 
         mListView = getExpandableListView();
@@ -84,7 +86,7 @@ public class TonePickerActivity extends ExpandableListActivity
           mHeaderDefault = _add_header_view("Default", default_uri);
         }
 
-        mAdapter = new TonePickerAdapter((Context)this, existing_uri, getComponentName());
+        mAdapter = new TonePickerAdapter(this, getComponentName(), show_bragi_slots);
         setListAdapter(mAdapter);
 
 
@@ -200,7 +202,7 @@ public class TonePickerActivity extends ExpandableListActivity
       mMediaPlayer.prepare();
       mMediaPlayer.start();
     } catch (IOException e) {
-      Log.w("TonePicker", "Unable to play track", e);
+      Log.w("TonePicker", "Unable to play track: "+uri != null ? uri.toString() : "null");
     }
   }
   private void stopRingtone() {

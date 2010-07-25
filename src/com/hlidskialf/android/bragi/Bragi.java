@@ -19,11 +19,12 @@ public class Bragi
 {
   public static final String EXTRA_PROFILE_ID="com.hlidskialf.android.bragi.extra.PROFILE_ID";
   public static final String EXTRA_PROFILE_VALUES="com.hlidskialf.android.bragi.extra.PROFILE_VALUES";
+  public static final String EXTRA_STARTED_FROM_BRAGI="com.hlidskialf.android.bragi.extra.STARTED_FROM_BRAGI";
 
 
-  public static Uri getUriForSlot(long profile_id)
+  public static Uri getUriForSlot(long slot_id)
   {
-    Uri ret = Uri.parse("file:///data/data/com.hlidskialf.android.bragi/files/slot_"+String.valueOf(profile_id));
+    Uri ret = Uri.parse("file:///data/data/com.hlidskialf.android.bragi/files/slot_"+String.valueOf(slot_id));
 
     return ret;
   }

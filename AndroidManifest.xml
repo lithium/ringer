@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.hlidskialf.android.bragi"
-      android:versionCode="000702"
-      android:versionName="0.7.2">
+      android:versionCode="000703"
+      android:versionName="0.7.3">
 
-      <uses-sdk android:minSdkVersion="4" />
-      <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-sdk android:minSdkVersion="4" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application android:label="@string/bragi_label">
 
@@ -20,17 +20,6 @@
 
         <activity android:name="com.hlidskialf.android.tonepicker.TonePickerActivity"
                   android:label="@string/tonepicker_label"
-                  >
-            <intent-filter>
-                <action android:name="android.intent.action.RINGTONE_PICKER" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-
-        <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity"
-                  android:label="@string/slotpicker_label"
-                  android:theme="@style/Theme.Dialog.NoTitleBar"
                   >
             <intent-filter>
                 <action android:name="android.intent.action.RINGTONE_PICKER" />
