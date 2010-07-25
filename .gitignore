@@ -3,3 +3,8 @@
 build.xml
 bin
 gen
+
+
+.project
+.settings
+.classpath
