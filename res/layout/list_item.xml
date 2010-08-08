@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dp"
-    android:textSize="16sp" 
-    android:id="@android:id/text1"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     >
-</TextView>
+    <ImageView
+        android:id="@android:id/icon1"
+        android:layout_width="24dp"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:src="@android:drawable/ic_menu_edit"
+        android:layout_alignParentLeft="true"
+    />
+    <CheckedTextView
+        android:id="@android:id/text1"
+        android:layout_width="fill_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:gravity="center_vertical"
+        android:checkMark="?android:attr/listChoiceIndicatorSingle"
+        android:paddingLeft="6dip"
+        android:paddingRight="6dip"
 
+        android:layout_toRightOf="@android:id/icon1"
+    />
+</RelativeLayout>

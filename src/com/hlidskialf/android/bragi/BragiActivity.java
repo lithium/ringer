@@ -10,10 +10,12 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.CheckedTextView;
 import android.widget.SimpleCursorAdapter;
 
 import com.hlidskialf.android.app.OneLineInputDialog;
@@ -24,12 +26,48 @@ public class BragiActivity extends ListActivity
     private BragiDatabase mDbHelper;
     private Cursor mProfileCursor;
     private long mActiveProfileId=-1;
+    private long mActivePosition=-1;
 
     private static final int MENU_ACTIVATE_ID=1;
     private static final int MENU_EDIT_ID=2;
     private static final int MENU_DELETE_ID=3;
 
     private static final int RESULT_EDIT_PROFILE=1;
+
+    private class ProfileAdapter extends SimpleCursorAdapter
+    {
+        public ProfileAdapter(Context context, int layout, Cursor c, String[] from, int[] to)
+        {
+          super(context,layout,c,from,to);
+        }
+
+        public void bindView (View view, Context context, Cursor cursor)
+        {
+          super.bindView(view,context,cursor);
+
+          ImageView iv = (ImageView)view.findViewById(android.R.id.icon1);
+          final int col_idx = cursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
+          final long profile_id = cursor.getLong(col_idx);
+          iv.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+              edit_profile(0,profile_id);
+            }
+          });
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+          View ret = super.getView(position,convertView,parent);
+
+          CheckedTextView ctv = (CheckedTextView)ret.findViewById(android.R.id.text1);
+          ctv.setChecked(position == mActivePosition);
+
+          return ret;
+        }
+
+
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -63,7 +101,7 @@ public class BragiActivity extends ListActivity
 
         mDbHelper = new BragiDatabase(this);
         mProfileCursor = mDbHelper.getAllProfiles();
-        setListAdapter( new SimpleCursorAdapter(this, android.R.layout.simple_list_item_single_choice, mProfileCursor, 
+        setListAdapter( new ProfileAdapter(this, R.layout.list_item, mProfileCursor, 
           new String[] { BragiDatabase.ProfileColumns.NAME }, 
           new int[] {android.R.id.text1})
         );
@@ -71,7 +109,6 @@ public class BragiActivity extends ListActivity
 
         SharedPreferences prefs = getSharedPreferences(Bragi.PREFERENCES, 0);
         mActiveProfileId = prefs.getLong(Bragi.PREF_ACTIVE_PROFILE, -1);
-        Log.v("Bragi", "active profile: "+String.valueOf(mActiveProfileId));
         if (mActiveProfileId != -1) {
           // find position for id
           mProfileCursor.moveToFirst();
@@ -79,7 +116,7 @@ public class BragiActivity extends ListActivity
           while (true) {
             long id = mProfileCursor.getLong(mColIdx_slot_id);
             if (mActiveProfileId == id) {
-              Log.v("Bragi", " setting: "+String.valueOf(position));
+              mActivePosition = position;
               mListView.setItemChecked(position, true);
               break;
             }
@@ -124,6 +161,7 @@ public class BragiActivity extends ListActivity
       if (id != mActiveProfileId) {
         activate_profile(position,id);
         mActiveProfileId = id;
+        mActivePosition = position;
       }
     }
 
@@ -173,7 +211,7 @@ public class BragiActivity extends ListActivity
     protected void activate_profile(int position, long id) 
     {
         Log.v("Bragi", "activate!");
-        setSelection(position);
+        getListView().setItemChecked(position, true);
 
         //mProfileCursor.moveToPosition(position);
         //BragiDatabase.ProfileModel profile = new BragiDatabase.ProfileModel(mProfileCursor);
