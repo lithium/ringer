@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="#0000aa"
+    android:background="#774400"
     >
 
     <ImageView android:id="@+id/actionbar_logo"

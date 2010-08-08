@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.hlidskialf.android.bragi"
-      android:versionCode="000703"
-      android:versionName="0.7.3">
+      android:versionCode="000704"
+      android:versionName="0.7.4">
 
     <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
-    <application android:label="@string/bragi_label">
+    <application android:label="@string/bragi_label"
+                 android:icon="@drawable/ic_launcher_bragi">
 
         <activity android:name="com.hlidskialf.android.bragi.BragiActivity"
                   android:theme="@android:style/Theme.NoTitleBar"
