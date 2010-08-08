@@ -4,6 +4,7 @@ package com.hlidskialf.android.bragi;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.media.AudioManager;
@@ -17,14 +18,19 @@ import java.io.FileOutputStream;
 
 public class Bragi 
 {
-  public static final String EXTRA_PROFILE_ID="com.hlidskialf.android.bragi.extra.PROFILE_ID";
-  public static final String EXTRA_PROFILE_VALUES="com.hlidskialf.android.bragi.extra.PROFILE_VALUES";
-  public static final String EXTRA_STARTED_FROM_BRAGI="com.hlidskialf.android.bragi.extra.STARTED_FROM_BRAGI";
+  public static final String PACKAGE="com.hlidskialf.android.bragi";
+
+  public static final String PREFERENCES="bragipreferences.db";
+  public static final String PREF_ACTIVE_PROFILE="active_profile";
+
+  public static final String EXTRA_PROFILE_ID=PACKAGE+".extra.PROFILE_ID";
+  public static final String EXTRA_PROFILE_VALUES=PACKAGE+".extra.PROFILE_VALUES";
+  public static final String EXTRA_STARTED_FROM_BRAGI=PACKAGE+".extra.STARTED_FROM_BRAGI";
 
 
   public static Uri getUriForSlot(long slot_id)
   {
-    Uri ret = Uri.parse("file:///data/data/com.hlidskialf.android.bragi/files/slot_"+String.valueOf(slot_id));
+    Uri ret = Uri.parse("file:///data/data/"+PACKAGE+"/files/slot_"+String.valueOf(slot_id));
 
     return ret;
   }
@@ -35,6 +41,8 @@ public class Bragi
 
     AudioManager audio = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
     BragiDatabase.ProfileModel profile = db.getProfile(profile_id, false);
+
+    SharedPreferences prefs = context.getSharedPreferences(Bragi.PREFERENCES, 0);
 
 
     Settings.System.putString(resolver, Settings.System.RINGTONE, profile.default_ring);
@@ -113,6 +121,9 @@ public class Bragi
     psc.close();
 
     db.close();
+
+
+    prefs.edit().putLong(Bragi.PREF_ACTIVE_PROFILE, profile_id).commit();
 
     
   }

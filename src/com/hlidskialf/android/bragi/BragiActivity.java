@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.database.Cursor;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -21,7 +22,7 @@ public class BragiActivity extends ListActivity
 {
     private BragiDatabase mDbHelper;
     private Cursor mProfileCursor;
-    private int mColIdx_slot_name;
+    private long mActiveProfileId=-1;
 
     private static final int MENU_ACTIVATE_ID=1;
     private static final int MENU_EDIT_ID=2;
@@ -49,19 +50,43 @@ public class BragiActivity extends ListActivity
         v.setVisibility(View.VISIBLE);
         v.setImageResource(android.R.drawable.ic_menu_preferences);
 
-        mDbHelper = new BragiDatabase(this);
+        ListView mListView = getListView();
+        mListView.setItemsCanFocus(false);
+        mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        registerForContextMenu(mListView);
 
+
+        mDbHelper = new BragiDatabase(this);
         mProfileCursor = mDbHelper.getAllProfiles();
         setListAdapter( new SimpleCursorAdapter(this, android.R.layout.simple_list_item_single_choice, mProfileCursor, 
           new String[] { BragiDatabase.ProfileColumns.NAME }, 
           new int[] {android.R.id.text1})
         );
-        mColIdx_slot_name = mProfileCursor.getColumnIndex(BragiDatabase.SlotColumns.NAME);
+        int mColIdx_slot_id = mProfileCursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
 
-        ListView mListView = getListView();
-        mListView.setItemsCanFocus(false);
-        mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        registerForContextMenu(mListView);
+        SharedPreferences prefs = getSharedPreferences(Bragi.PREFERENCES, 0);
+        mActiveProfileId = prefs.getLong(Bragi.PREF_ACTIVE_PROFILE, -1);
+        Log.v("Bragi", "active profile: "+String.valueOf(mActiveProfileId));
+        if (mActiveProfileId != -1) {
+          // find position for id
+          mProfileCursor.moveToFirst();
+          int position = 0;
+          while (true) {
+            long id = mProfileCursor.getLong(mColIdx_slot_id);
+            if (mActiveProfileId == id) {
+              Log.v("Bragi", " setting: "+String.valueOf(position));
+              mListView.setItemChecked(position, true);
+              break;
+            }
+            position++;
+            if (!mProfileCursor.moveToNext()) 
+              break;
+          }
+        }
+
+
+
+
     }
 
     public void finish() {
@@ -91,7 +116,10 @@ public class BragiActivity extends ListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
-      activate_profile(position,id);
+      if (id != mActiveProfileId) {
+        activate_profile(position,id);
+        mActiveProfileId = id;
+      }
     }
 
     @Override
