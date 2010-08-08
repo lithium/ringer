@@ -55,10 +55,6 @@ public class SlotEditorActivity extends ListActivity
         v.setVisibility(View.VISIBLE);
 
         mDbHelper = new BragiDatabase(this);
-        mDbHelper.addSlot("Email");
-        mDbHelper.addSlot("SMS");
-        mDbHelper.addSlot("IM");
-        mDbHelper.addSlot("Calendar");
 
         mSlotCursor = mDbHelper.getAllSlots();
         setListAdapter( new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, mSlotCursor, 

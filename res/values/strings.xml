@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="bragi_label">Bragi</string>
+    <string name="bragi_label">Ringer</string>
     <string name="tonepicker_label">Tone Picker</string>
     <string name="slotpicker_label">Bragi Slot Picker</string>
 
     <string name="activate">Activate</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+
+    <!-- default slot/profile names -->
+    <string name="default_slot_email">Email</string>
+    <string name="default_slot_sms">SMS</string>
+    <string name="default_slot_im">IM</string>
+    <string name="default_slot_calendar">Calendar</string>
+
+    <string name="default_profile_home">Home</string>
+    <string name="default_profile_work">Work</string>
+    <string name="default_profile_theatre">Theatre</string>
+    <string name="default_profile_loud">Loud</string>
+    <string name="default_profile_music">Music</string>
+    
 </resources>

@@ -201,7 +201,7 @@ public class ProfileEditorActivity extends PreferenceActivity
           Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
           String key = mLastPreference.getKey();
 
-          if (key.startsWith("default_")) {
+          if (key != null && key.startsWith("default_")) {
             String uri_str = uri != null ? uri.toString() : "";
             if (key.equals("default_ring")) mProfile.default_ring = uri_str;
             else if (key.equals("default_notify")) mProfile.default_notify = uri_str;

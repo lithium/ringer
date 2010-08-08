@@ -50,11 +50,6 @@ public class BragiActivity extends ListActivity
         v.setImageResource(android.R.drawable.ic_menu_preferences);
 
         mDbHelper = new BragiDatabase(this);
-        mDbHelper.addProfile("Home");
-        mDbHelper.addProfile("In Public");
-        mDbHelper.addProfile("Loud");
-        mDbHelper.addProfile("Normal");
-        mDbHelper.addProfile("Silent");
 
         mProfileCursor = mDbHelper.getAllProfiles();
         setListAdapter( new SimpleCursorAdapter(this, android.R.layout.simple_list_item_single_choice, mProfileCursor, 
