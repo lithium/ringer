@@ -6,7 +6,14 @@
 
     <string name="activate">Activate</string>
     <string name="edit">Edit</string>
+    <string name="rename">Rename</string>
     <string name="delete">Delete</string>
+
+    <!-- activity names -->
+    <string name="activity_main">Profiles</string>
+    <string name="activity_sloteditor">Slots</string>
+    <string name="activity_profileeditor">Edit Profile</string>
+    <string name="activity_profileeditorvolume">Edit Profile Volumes</string>
 
     <!-- default slot/profile names -->
     <string name="default_slot_email">Email</string>

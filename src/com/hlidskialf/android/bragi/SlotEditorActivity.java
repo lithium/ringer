@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -38,6 +39,10 @@ public class SlotEditorActivity extends ListActivity
 
         mIntent = getIntent();
         String action = mIntent.getAction();
+
+        TextView tv;
+        tv = (TextView)findViewById(R.id.actionbar_subtitle);
+        tv.setText(getString(R.string.activity_sloteditor));
 
         ImageView v;
         v = (ImageView)findViewById(R.id.actionbar_logo);

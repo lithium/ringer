@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
@@ -76,6 +77,11 @@ public class ProfileEditorVolumeActivity extends PreferenceActivity
           pref.setOnPreferenceChangeListener(this);
           _set_pref_summary(pref);
         }
+
+        String profile_name = (String)mProfileValues.get("name");
+        TextView tv;
+        tv = (TextView)findViewById(R.id.actionbar_subtitle);
+        tv.setText(getString(R.string.activity_profileeditorvolume)+(profile_name == null ? "" : " - "+profile_name));
 
     }
 

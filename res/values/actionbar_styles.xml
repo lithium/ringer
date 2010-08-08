@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   <style name="ActionBar">
+      <item name="android:background">#774400</item>
+   </style>
+
+   <style name="ActionBar.SubTitle" parent="@android:style/TextAppearance.Small">
+   </style>
+</resources>
+

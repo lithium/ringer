@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
@@ -104,6 +105,11 @@ public class ProfileEditorActivity extends PreferenceActivity
         pref = screen.findPreference("default_alarm");
         pref.setOnPreferenceClickListener(this);
         _set_default_summary(pref, mProfile.default_alarm);
+
+
+        TextView tv;
+        tv = (TextView)findViewById(R.id.actionbar_subtitle);
+        tv.setText(getString(R.string.activity_profileeditor)+" - "+mProfile.name);
 
         
     }
