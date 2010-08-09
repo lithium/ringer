@@ -1,8 +1,10 @@
 package com.hlidskialf.android.bragi;
 
 import android.app.ListActivity;
+import android.app.AlertDialog;
 import android.database.Cursor;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,12 +23,14 @@ import android.widget.SimpleCursorAdapter;
 import com.hlidskialf.android.app.OneLineInputDialog;
 
 public class BragiActivity extends ListActivity
-                implements View.OnClickListener
+                implements View.OnClickListener,
+                           DialogInterface.OnClickListener
 {
     private BragiDatabase mDbHelper;
     private Cursor mProfileCursor;
     private long mActiveProfileId=-1;
     private long mActivePosition=-1;
+    private long mConfirmDeleteId=-1;
 
     private static final int MENU_ACTIVATE_ID=1;
     private static final int MENU_EDIT_ID=2;
@@ -137,6 +141,19 @@ public class BragiActivity extends ListActivity
       super.finish();
     }
 
+    /* DialogInterface.OnClickListener */
+    public void onClick(DialogInterface dialog, int which) {
+      switch (which) {
+      case DialogInterface.BUTTON_POSITIVE:
+        if (mConfirmDeleteId != -1) {
+          mDbHelper.deleteProfile(mConfirmDeleteId);
+          mProfileCursor.requery();
+          mConfirmDeleteId = -1;
+        }
+      }
+    }
+
+    /* View.OnClickListener */
     public void onClick(View v) {
       final long id = v.getId();
       Intent intent = new Intent();
@@ -193,8 +210,23 @@ public class BragiActivity extends ListActivity
       }
 
       if (id == MENU_DELETE_ID) {
-        mDbHelper.deleteProfile(info.id);
-        mProfileCursor.requery();
+
+        mConfirmDeleteId=info.id;
+        int col_idx = mProfileCursor.getColumnIndex(BragiDatabase.ProfileColumns.NAME);
+        mProfileCursor.moveToPosition(info.position);
+        String name = mProfileCursor.getString(col_idx);
+        String message = getString(R.string.confirm_delete_profile_dialog_message, name);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+          .setIcon(android.R.drawable.ic_dialog_alert)
+          .setCancelable(true)
+          .setTitle(R.string.confirm_delete_profile_dialog_title)
+          .setMessage(message)
+          .setPositiveButton(android.R.string.ok, this)
+          .setNegativeButton(android.R.string.cancel, null)
+          .show()
+          ;
+
         return true;
       }
 

@@ -1,8 +1,10 @@
 package com.hlidskialf.android.bragi;
 
 import android.app.ListActivity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
@@ -20,12 +22,14 @@ import android.widget.SimpleCursorAdapter;
 import com.hlidskialf.android.app.OneLineInputDialog;
 
 public class SlotEditorActivity extends ListActivity
-                implements View.OnClickListener
+                implements View.OnClickListener,
+                           DialogInterface.OnClickListener
 {
     private BragiDatabase mDbHelper;
     private Cursor mSlotCursor;
     private int mColIdx_slot_name;
     private Intent mIntent;
+    private long mConfirmDeleteId=-1;
 
     private static final int MENU_EDIT_ID=1;
     private static final int MENU_DELETE_ID=2;
@@ -77,6 +81,18 @@ public class SlotEditorActivity extends ListActivity
       mSlotCursor.close();
       mDbHelper.close();
       super.finish();
+    }
+
+    /* DialogInterface.OnClickListener */
+    public void onClick(DialogInterface dialog, int which) {
+      switch (which) {
+      case DialogInterface.BUTTON_POSITIVE:
+        if (mConfirmDeleteId != -1 ) {
+          mDbHelper.deleteSlot(mConfirmDeleteId);
+          mSlotCursor.requery();
+          mConfirmDeleteId = -1;
+        }
+      }
     }
 
     public void onClick(View v) {
@@ -145,8 +161,22 @@ public class SlotEditorActivity extends ListActivity
       }
 
       if (id == MENU_DELETE_ID) {
-        mDbHelper.deleteSlot(info.id);
-        mSlotCursor.requery();
+
+        mConfirmDeleteId = info.id;
+        mSlotCursor.moveToPosition(info.position);
+        String name = mSlotCursor.getString(mColIdx_slot_name);
+        String message = getString(R.string.confirm_delete_slot_dialog_message, name);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+          .setIcon(android.R.drawable.ic_dialog_alert)
+          .setCancelable(true)
+          .setTitle(R.string.confirm_delete_slot_dialog_title)
+          .setMessage(message)
+          .setPositiveButton(android.R.string.ok, this)
+          .setNegativeButton(android.R.string.cancel, null)
+          .show()
+          ;
+
         return true;
       }
 

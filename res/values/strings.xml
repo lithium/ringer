@@ -53,11 +53,18 @@
     <!-- add profile dialog -->
     <string name="profile_dialog_new_name">Name for new profile</string>
     <string name="slot_dialog_new_name">Name for new slot</string>
-    <string name="slot_dialog_rename">New name for \'%s\'</string>
+    <string name="slot_dialog_rename">New name for slot \'%s\'</string>
 
 
-    <!-- activate dialog box -->
+    <!-- activate dialog -->
     <string name="activate_dialog_title">Activating profile</string>
     <string name="activate_dialog_message">Activating the \'%s\' profile...</string>
+
+    <!-- confirm delete dialog -->
+    <string name="confirm_delete_profile_dialog_title">Delete profile?</string>
+    <string name="confirm_delete_profile_dialog_message">Are you sure you want to delete the \'%s\' profile?</string>
+
+    <string name="confirm_delete_slot_dialog_title">Delete slot?</string>
+    <string name="confirm_delete_slot_dialog_message">Are you sure you want to delete the \'%s\' slot?</string>
     
 </resources>
