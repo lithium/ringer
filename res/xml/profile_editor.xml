@@ -3,21 +3,21 @@
 
     <PreferenceScreen android:key="volume_screen"
       android:persistent="false"
-      android:title="Volume Settings"
-      android:summary="silent mode / vibrate / volume levels"
+      android:title="@string/profile_editor_volume_screen"
+      android:summary="@string/profile_editor_volume_screen_summary"
       />
 
     <Preference android:key="default_ring"
       android:persistent="false"
-      android:title="Default Ringtone"
+      android:title="@string/profile_editor_default_ring"
       />
     <Preference android:key="default_notify"
       android:persistent="false"
-      android:title="Default Notification"
+      android:title="@string/profile_editor_default_notify"
       />
     <Preference android:key="default_alarm"
       android:persistent="false"
-      android:title="Default Alarm Alert"
+      android:title="@string/profile_editor_default_alarm"
       />
 
 </PreferenceScreen>

@@ -33,6 +33,8 @@ public class ProfileEditorActivity extends PreferenceActivity
     private BragiDatabase.ProfileModel mProfile;
     private BragiDatabase mDbHelper;
 
+    private String mString_unset;
+
     public static final int RESULT_VOLUME_SCREEN=1;
     private static final int RESULT_TONEPICKER=2;
 
@@ -54,6 +56,7 @@ public class ProfileEditorActivity extends PreferenceActivity
         setContentView(R.layout.main);
         addPreferencesFromResource(R.xml.profile_editor);
 
+        mString_unset = getString(R.string.unset);
 
         ImageView v;
         v = (ImageView)findViewById(R.id.actionbar_logo);
@@ -146,7 +149,7 @@ public class ProfileEditorActivity extends PreferenceActivity
         Ringtone ring = RingtoneManager.getRingtone(this, uri);
         pref.setSummary(ring.getTitle(this));
       } else {
-        pref.setSummary("***unset***");
+        pref.setSummary(mString_unset);
       }
 
     }
@@ -164,7 +167,7 @@ public class ProfileEditorActivity extends PreferenceActivity
         pref.setSummary(bucket.ring.getTitle(this));
       }
       else
-        pref.setSummary("***unset***");
+        pref.setSummary(mString_unset);
       
       mSlotHash.put(pref, bucket);
 

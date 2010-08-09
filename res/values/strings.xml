@@ -2,12 +2,13 @@
 <resources>
     <string name="bragi_label">Ringer</string>
     <string name="tonepicker_label">Tone Picker</string>
-    <string name="slotpicker_label">Bragi Slot Picker</string>
 
+    <!-- context menu entries -->
     <string name="activate">Activate</string>
     <string name="edit">Edit</string>
     <string name="rename">Rename</string>
     <string name="delete">Delete</string>
+
 
     <!-- activity names -->
     <string name="activity_main">Profiles</string>
@@ -15,16 +16,42 @@
     <string name="activity_profileeditor">Edit Profile</string>
     <string name="activity_profileeditorvolume">Edit Profile Volumes</string>
 
-    <!-- default slot/profile names -->
+
+    <!-- default profile names -->
     <string name="default_slot_email">Email</string>
     <string name="default_slot_sms">SMS</string>
     <string name="default_slot_im">IM</string>
     <string name="default_slot_calendar">Calendar</string>
 
+
+    <!-- default slot names -->
     <string name="default_profile_home">Home</string>
     <string name="default_profile_work">Work</string>
     <string name="default_profile_theatre">Theatre</string>
     <string name="default_profile_loud">Loud</string>
     <string name="default_profile_music">Music</string>
+
+
+    <!-- edit profile -->
+    <string name="unset"></string>
+    <string name="profile_editor_volume_screen">Volume Settings</string>
+    <string name="profile_editor_volume_screen_summary">silent mode / vibrate / volume levels</string>
+    <string name="profile_editor_default_ring">Default Ringtone</string>
+    <string name="profile_editor_default_notify">Default Notification</string>
+    <string name="profile_editor_default_alarm">Default Alarm</string>
+    <string name="profile_editor_silent_mode">Silent Mode</string>
+    <string name="profile_editor_vibrate_ring">Vibrate on Ring</string>
+    <string name="profile_editor_vibrate_notify">Vibrate on Notification</string>
+    <string name="profile_editor_volume_ringer">Ringer Volume</string>
+    <string name="profile_editor_volume_notify">Notification Volume</string>
+    <string name="profile_editor_volume_music">Media Volume</string>
+    <string name="profile_editor_volume_call">In Call Volume</string>
+    <string name="profile_editor_volume_system">System Sound Volume</string>
+    <string name="profile_editor_volume_alarm">Alarm Volume</string>
+
+
+    <!-- activate dialog box -->
+    <string name="activate_dialog_title">Activating profile</string>
+    <string name="activate_dialog_message">Activating the \'%s\' profile...</string>
     
 </resources>
