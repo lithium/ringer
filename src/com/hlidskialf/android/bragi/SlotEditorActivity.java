@@ -86,7 +86,7 @@ public class SlotEditorActivity extends ListActivity
         }
         else
         if (id == R.id.actionbar_button1) {
-          OneLineInputDialog dia = new OneLineInputDialog(this,R.string.bragi_label,"New slot name",null);
+          OneLineInputDialog dia = new OneLineInputDialog(this,R.string.bragi_label,getString(R.string.slot_dialog_new_name),null);
           dia.setOnCompleteListener(new OneLineInputDialog.OnCompleteListener() {
             public void onComplete(String value) {
               mDbHelper.addSlot(value);
@@ -107,7 +107,7 @@ public class SlotEditorActivity extends ListActivity
       final String cur_name = get_name(position);
       final long slot_id = id;
 
-      OneLineInputDialog dia = new OneLineInputDialog(this, R.string.bragi_label, "New name for '"+cur_name+"'",cur_name);
+      OneLineInputDialog dia = new OneLineInputDialog(this, R.string.bragi_label, getString(R.string.slot_dialog_rename, cur_name), cur_name);
       dia.setOnCompleteListener(new OneLineInputDialog.OnCompleteListener() {
         public void onComplete(String value) {
           mDbHelper.updateSlot(slot_id, value); 
@@ -128,7 +128,7 @@ public class SlotEditorActivity extends ListActivity
     {
       super.onCreateContextMenu(menu,v,menuInfo);
 
-      menu.add(0, MENU_EDIT_ID, 0, R.string.edit);
+      menu.add(0, MENU_EDIT_ID, 0, R.string.rename);
       menu.add(0, MENU_DELETE_ID, 0, R.string.delete);
     }
 

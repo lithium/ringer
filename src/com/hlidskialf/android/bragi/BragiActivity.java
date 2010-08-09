@@ -145,7 +145,7 @@ public class BragiActivity extends ListActivity
         startActivity(intent);
       }
       if (id == R.id.actionbar_button1) {
-          OneLineInputDialog dia = new OneLineInputDialog(this,R.string.bragi_label,"New profile name",null);
+          OneLineInputDialog dia = new OneLineInputDialog(this,R.string.bragi_label,getString(R.string.profile_dialog_new_name),null);
           dia.setOnCompleteListener(new OneLineInputDialog.OnCompleteListener() {
             public void onComplete(String value) {
               mDbHelper.addProfile(value);
@@ -216,5 +216,11 @@ public class BragiActivity extends ListActivity
         //mProfileCursor.moveToPosition(position);
         //BragiDatabase.ProfileModel profile = new BragiDatabase.ProfileModel(mProfileCursor);
         Bragi.activateProfile(this, getContentResolver(), id);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) 
+    {
+        mProfileCursor.requery();
     }
 }

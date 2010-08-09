@@ -34,6 +34,7 @@
 
     <!-- edit profile -->
     <string name="unset"></string>
+    <string name="profile_editor_name">Profile Name</string>
     <string name="profile_editor_volume_screen">Volume Settings</string>
     <string name="profile_editor_volume_screen_summary">silent mode / vibrate / volume levels</string>
     <string name="profile_editor_default_ring">Default Ringtone</string>
@@ -48,6 +49,11 @@
     <string name="profile_editor_volume_call">In Call Volume</string>
     <string name="profile_editor_volume_system">System Sound Volume</string>
     <string name="profile_editor_volume_alarm">Alarm Volume</string>
+
+    <!-- add profile dialog -->
+    <string name="profile_dialog_new_name">Name for new profile</string>
+    <string name="slot_dialog_new_name">Name for new slot</string>
+    <string name="slot_dialog_rename">New name for \'%s\'</string>
 
 
     <!-- activate dialog box -->

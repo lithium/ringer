@@ -28,7 +28,8 @@ import com.hlidskialf.android.tonepicker.TonePickerActivity;
 
 public class ProfileEditorActivity extends PreferenceActivity
                 implements View.OnClickListener,
-                Preference.OnPreferenceClickListener
+                Preference.OnPreferenceClickListener,
+                Preference.OnPreferenceChangeListener
 {
     private BragiDatabase.ProfileModel mProfile;
     private BragiDatabase mDbHelper;
@@ -99,12 +100,20 @@ public class ProfileEditorActivity extends PreferenceActivity
         slot_cursor.close();
 
         Preference pref;
+
+        pref = screen.findPreference("name");
+        pref.setSummary(mProfile.name);
+        pref.setDefaultValue(mProfile.name);
+        pref.setOnPreferenceChangeListener(this);
+
         pref = screen.findPreference("default_ring");
         pref.setOnPreferenceClickListener(this);
         _set_default_summary(pref, mProfile.default_ring);
+
         pref = screen.findPreference("default_notify");
         pref.setOnPreferenceClickListener(this);
         _set_default_summary(pref, mProfile.default_notify);
+
         pref = screen.findPreference("default_alarm");
         pref.setOnPreferenceClickListener(this);
         _set_default_summary(pref, mProfile.default_alarm);
@@ -130,6 +139,18 @@ public class ProfileEditorActivity extends PreferenceActivity
         if (id == R.id.actionbar_logo || id == R.id.actionbar_button1) {
           finish();
         }
+    }
+
+    /*Preference.OnPreferenceChangeListener*/
+    public boolean onPreferenceChange(Preference preference, Object newValue)
+    {
+      String key = preference.getKey();
+      if (key != null && key.equals("name")) {
+          mProfile.name = newValue.toString();
+          mDbHelper.updateProfile(mProfile.id, mProfile.contentValues());
+          preference.setSummary(mProfile.name);
+      }
+      return true;
     }
 
     /*Preference.OnPreferenceClickListener*/
