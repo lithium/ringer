@@ -125,14 +125,14 @@ public class ProfileEditorVolumeActivity extends PreferenceActivity
 
     private void _set_max_vol(String pref_key, int audio_stream)
     {
-      int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
-      String suffix = " / "+String.valueOf(max); 
+      int max = mAudioManager.getStreamMaxVolume(audio_stream);
+      String suffix = " / "+String.valueOf(max);
 
       SeekBarPreference pref = (SeekBarPreference) mScreen.findPreference(pref_key);
       pref.setProgress(mProfileValues.getAsInteger(pref_key));
       pref.setMax(max);
       pref.setSuffix(suffix);
-      
+
       mMaxHash.put(pref_key, suffix);
     }
     private String _get_max_vol(String pref_key) 
