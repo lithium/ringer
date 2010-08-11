@@ -23,7 +23,7 @@ import android.preference.RingtonePreference;
 
 import java.util.HashMap;
 
-import com.hlidskialf.android.tonepicker.TonePickerActivity;
+import com.hlidskialf.android.tonepicker.TonePicker;
 
 
 public class ProfileEditorActivity extends PreferenceActivity
@@ -157,7 +157,7 @@ public class ProfileEditorActivity extends PreferenceActivity
     public boolean onPreferenceClick(Preference preference)
     {
       mLastPreference = preference;
-      Intent intent = new Intent(this, TonePickerActivity.class);
+      Intent intent = new Intent(this, TonePicker.class);
       intent.putExtra(Bragi.EXTRA_STARTED_FROM_BRAGI, true);
       startActivityForResult(intent, RESULT_TONEPICKER);
       return true;

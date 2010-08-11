@@ -23,6 +23,8 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 import java.io.IOException;
 
+import com.hlidskialf.android.bragi.R;
+
 public class TonePicker extends ExpandableListActivity 
         implements View.OnClickListener
 {

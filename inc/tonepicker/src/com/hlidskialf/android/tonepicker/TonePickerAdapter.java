@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import android.util.Log;
 
+import com.hlidskialf.android.bragi.R;
+
 public class TonePickerAdapter extends BaseExpandableListAdapter {
   private Context mContext;
   private LayoutInflater mInflater;

@@ -18,6 +18,8 @@ import android.view.MenuItem;
 
 import android.provider.Settings;
 
+import com.hlidskialf.android.bragi.R;
+
 public class TonePickerSplash extends Activity
                   implements Button.OnClickListener
 {

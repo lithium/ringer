@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.hlidskialf.android.bragi"
-      android:versionCode="000704"
-      android:versionName="0.7.4">
+      android:versionCode="000705"
+      android:versionName="0.7.5">
 
     <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.hlidskialf.android.tonepicker.TonePickerActivity"
+        <activity android:name="com.hlidskialf.android.tonepicker.TonePicker"
                   android:label="@string/tonepicker_label"
                   >
             <intent-filter>

@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hlidskialf.android.bragi.R;
 
 public class OtherIntentPicker extends ListActivity
 {
