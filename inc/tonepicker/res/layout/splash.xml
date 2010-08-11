@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  >
+
+  <LinearLayout android:id="@+id/button_bar"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    >
+    <Button android:id="@+id/splash_button_ringtone"
+      android:text="@string/splash_button_label_ringtone"
+      android:layout_width="0dip" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1"
+      />
+    <Button android:id="@+id/splash_button_notification"
+      android:text="@string/splash_button_label_notification"
+      android:layout_width="0dip" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1"
+      />
+    <Button android:id="@+id/splash_button_alarm"
+      android:text="@string/splash_button_label_alarm"
+      android:layout_width="0dip" 
+      android:layout_height="wrap_content" 
+      android:layout_weight="1"
+      android:visibility="gone"
+      />
+  </LinearLayout>
+
+  <ScrollView  
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:layout_above="@id/button_bar"
+    android:layout_marginLeft="5sp"
+    >
+    <TableLayout
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:layout_marginRight="10sp"
+      android:layout_marginLeft="10sp"
+      android:layout_marginBottom="10sp"
+      android:stretchColumns="1"
+      >
+
+      <TableRow android:layout_marginBottom="20dp">
+        <TextView android:id="@+id/volume_text_ringer"
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content"
+          android:text="@string/volume_ringer"
+          android:gravity="left"
+          />
+        <SeekBar android:id="@+id/volume_ringer"
+          android:layout_marginLeft="5sp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"/>
+      </TableRow>
+
+      <TableRow android:layout_marginBottom="20dp">
+        <TextView android:id="@+id/volume_text_notify"
+          android:layout_width="fill_parent" 
+          android:layout_height="wrap_content"
+          android:text="@string/volume_notify"
+          android:gravity="left"
+          android:visibility="gone"
+          />
+        <SeekBar android:id="@+id/volume_notify"
+          android:layout_marginLeft="5sp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          />
+      </TableRow>
+
+      <TableRow android:layout_marginBottom="20dp">
+        <TextView android:id="@+id/volume_text_music"
+          android:layout_width="fill_parent" 
+          android:layout_height="wrap_content"
+          android:text="@string/volume_music"
+          android:gravity="left"
+          />
+        <SeekBar android:id="@+id/volume_music"
+          android:layout_marginLeft="5sp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"/>
+      </TableRow>
+
+      <TableRow android:layout_marginBottom="20dp">
+        <TextView android:id="@+id/volume_text_call"
+          android:layout_width="fill_parent" 
+          android:layout_height="wrap_content"
+          android:text="@string/volume_call"
+          android:gravity="left"
+          />
+        <SeekBar android:id="@+id/volume_call"
+          android:layout_marginLeft="5sp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"/>
+      </TableRow>
+
+      <TableRow android:layout_marginBottom="20dp">
+        <TextView android:id="@+id/volume_text_system"
+          android:layout_width="fill_parent" 
+          android:layout_height="wrap_content"
+          android:text="@string/volume_system"
+          android:gravity="left"
+          />
+        <SeekBar android:id="@+id/volume_system"
+          android:layout_marginLeft="5sp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"/>
+      </TableRow>
+
+      <TableRow android:layout_marginBottom="20dp">
+        <TextView android:id="@+id/volume_text_alarm"
+          android:layout_width="fill_parent" 
+          android:layout_height="wrap_content"
+          android:text="@string/volume_alarm"
+          android:gravity="left"
+          />
+        <SeekBar android:id="@+id/volume_alarm"
+          android:layout_marginLeft="5sp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"/>
+      </TableRow>
+
+      <TableRow>
+        <TextView android:id="@+id/volume_text_dtmf"
+          android:layout_width="fill_parent" 
+          android:layout_height="wrap_content"
+          android:text="@string/volume_dtmf"
+          android:gravity="left"
+          android:visibility="gone"
+          />
+        <SeekBar android:id="@+id/volume_dtmf"
+          android:layout_marginLeft="5sp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:visibility="gone"
+          />
+      </TableRow>
+
+    </TableLayout>
+  </ScrollView>
+</RelativeLayout>
