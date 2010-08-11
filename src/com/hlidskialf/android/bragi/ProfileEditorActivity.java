@@ -158,7 +158,7 @@ public class ProfileEditorActivity extends PreferenceActivity
     {
       mLastPreference = preference;
       Intent intent = new Intent(this, TonePicker.class);
-      intent.putExtra(Bragi.EXTRA_STARTED_FROM_BRAGI, true);
+      intent.putExtra(Bragi.EXTRA_SHOW_BRAGI_SLOTS, false);
       startActivityForResult(intent, RESULT_TONEPICKER);
       return true;
     }

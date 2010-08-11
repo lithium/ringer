@@ -33,6 +33,8 @@ import java.util.Map.Entry;
 import android.util.Log;
 
 import com.hlidskialf.android.bragi.R;
+import com.hlidskialf.android.bragi.BragiDatabase;
+import com.hlidskialf.android.bragi.Bragi;
 
 public class TonePickerAdapter extends BaseExpandableListAdapter {
   private Context mContext;
@@ -57,6 +59,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   private ToneCursor mCursor_ring;
   private ToneCursor mCursor_notify;
   private ToneCursor mCursor_alarm;
+  private ToneCursor mCursor_slots;
   private LinkedHashMap<Integer,ToneCursor> mCursor_tracks;
   private LinkedHashMap<Integer,String> mAlbumNames;
 
@@ -66,6 +69,8 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   private int mColIdx_track_title;
   private int mColIdx_track_track;
   private int mColIdx_track_id;
+  private int mColIdx_slot_id;
+  private int mColIdx_slot_name;
 
   public class ViewHolder {
     CheckedTextView label;
@@ -131,17 +136,37 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     }
   }
 
-  public TonePickerAdapter(Context context)
+  class SlotToneCursor extends ToneCursor
+  {
+    public SlotToneCursor(Cursor c) { super(c); }
+    public Tone cacheTone(int position) 
+    {
+      mCursor.moveToPosition(position);
+      Tone tone = new Tone();
+      long slot_id = mCursor.getLong(mColIdx_slot_id);
+      tone.name = mCursor.getString(mColIdx_slot_name);
+      tone.uri = Bragi.getUriForSlot(slot_id);
+      return tone;
+    }
+  }
+
+  public TonePickerAdapter(Context context, boolean show_bragi_slots)
   {
     mContext = context;
     mContentResolver = mContext.getContentResolver();
     mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mRingtoneManager = new RingtoneManager(mContext);
+    mShowSlots = show_bragi_slots;
 
     mAlbumNames = new LinkedHashMap<Integer,String>();
     mCursor_tracks = new LinkedHashMap<Integer,ToneCursor>();
 
-    INDEX_SLOTS=-1;
+    if (mShowSlots) {
+      INDEX_SLOTS=0;
+    }
+    else {
+      INDEX_SLOTS=-1;
+    }
     INDEX_FIRST_BUILTIN=INDEX_SLOTS+1;
     INDEX_RINGTONES=INDEX_FIRST_BUILTIN+0;
     INDEX_NOTIFICATIONS=INDEX_FIRST_BUILTIN+1;
@@ -152,6 +177,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     mCursor_notify = _builtin_cursor(RingtoneManager.TYPE_NOTIFICATION);
     mCursor_alarm = _builtin_cursor(RingtoneManager.TYPE_ALARM);
     mCursor_album = _album_cursor();
+    mCursor_slots = _slot_cursor();
   }
 
   public boolean isChildSelectable(int groupPosition, int childPosition) 
@@ -193,11 +219,9 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     if (groupPosition == INDEX_RINGTONES) {
       return mCursor_ring;
     }
-    /*
     if (mShowSlots && groupPosition == INDEX_SLOTS) {
-      return mSlotCache;
+      return mCursor_slots;
     }
-    */
 
     return null;
   }
@@ -217,11 +241,9 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     else
     if (groupPosition >= INDEX_FIRST_BUILTIN)
       text = BUILTIN_NAMES[groupPosition - INDEX_FIRST_BUILTIN];
-      /*
     else
     if (mShowSlots && groupPosition == INDEX_SLOTS)
-      text = getString("Bragi Slots";
-    */
+      text = "Bragi Slots";
     tv.setText(text);
 
     return convertView;
@@ -286,6 +308,16 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     mColIdx_album_album = cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
     mColIdx_album_album_id = cursor.getColumnIndex(MediaStore.Audio.Albums._ID);
     return cursor;
+  }
+
+  private SlotToneCursor _slot_cursor()
+  {
+    BragiDatabase db = new BragiDatabase(mContext);
+    Cursor cursor = db.getAllSlots();
+    mColIdx_slot_id = cursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
+    mColIdx_slot_name = cursor.getColumnIndex(BragiDatabase.SlotColumns.NAME);
+
+    return new SlotToneCursor( cursor );
   }
 
   private MediaToneCursor _get_track_cursor(int position)

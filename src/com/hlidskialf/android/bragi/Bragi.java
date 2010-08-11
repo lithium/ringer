@@ -27,7 +27,7 @@ public class Bragi
 
   public static final String EXTRA_PROFILE_ID=PACKAGE+".extra.PROFILE_ID";
   public static final String EXTRA_PROFILE_VALUES=PACKAGE+".extra.PROFILE_VALUES";
-  public static final String EXTRA_STARTED_FROM_BRAGI=PACKAGE+".extra.STARTED_FROM_BRAGI";
+  public static final String EXTRA_SHOW_BRAGI_SLOTS=PACKAGE+".extra.SHOW_BRAGI_SLOTS";
 
 
   public static Uri getUriForSlot(long slot_id)

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import java.io.IOException;
 
 import com.hlidskialf.android.bragi.R;
+import com.hlidskialf.android.bragi.Bragi;
 
 public class TonePicker extends ExpandableListActivity 
         implements View.OnClickListener
@@ -70,7 +71,7 @@ public class TonePicker extends ExpandableListActivity
     Intent intent = getIntent();
     Uri existing_uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI);
     Uri default_uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI);
-    //boolean show_bragi_slots = ! intent.getBooleanExtra(Bragi.EXTRA_STARTED_FROM_BRAGI, false);
+    boolean show_bragi_slots = intent.getBooleanExtra(Bragi.EXTRA_SHOW_BRAGI_SLOTS, true);
 
 
     mInflater = getLayoutInflater();
@@ -99,7 +100,7 @@ public class TonePicker extends ExpandableListActivity
     mListView.addFooterView(v, null, true);
 
 
-    mAdapter = new TonePickerAdapter(this);
+    mAdapter = new TonePickerAdapter(this, show_bragi_slots);
     setListAdapter(mAdapter);
   }
 
