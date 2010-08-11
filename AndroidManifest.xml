@@ -28,6 +28,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.hlidskialf.android.tonepicker.OtherIntentPicker"/>
 
         <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity" 
                   android:theme="@android:style/Theme.NoTitleBar"/>
