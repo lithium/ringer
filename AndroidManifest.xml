@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application android:label="@string/bragi_label"
-                 android:icon="@drawable/ic_launcher_bragi">
+                 android:icon="@drawable/ic_launcher_ringer">
 
         <activity android:name="com.hlidskialf.android.bragi.BragiActivity"
                   android:theme="@android:style/Theme.NoTitleBar"

@@ -51,7 +51,7 @@ public class ProfileEditorVolumeActivity extends PreferenceActivity
         ImageView v;
         v = (ImageView)findViewById(R.id.actionbar_logo);
         v.setOnClickListener(this);
-        v.setImageResource(R.drawable.logo);
+        v.setImageResource(R.drawable.ic_actiontitle_ringer);
 
         v = (ImageView)findViewById(R.id.actionbar_button1);
         v.setOnClickListener(this);

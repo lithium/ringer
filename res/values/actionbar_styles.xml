@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <style name="ActionBar">
-      <item name="android:background">#774400</item>
+      <item name="android:background">@drawable/ic_actionbg_ringer</item>
+      <item name="android:layout_height">72dp</item>
    </style>
 
    <style name="ActionBar.SubTitle" parent="@android:style/TextAppearance.Small">
