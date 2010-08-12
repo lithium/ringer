@@ -20,6 +20,7 @@
         </activity>
 
         <activity android:name="com.hlidskialf.android.tonepicker.TonePicker"
+                  android:theme="@android:style/Theme.NoTitleBar"
                   android:label="@string/tonepicker_label"
                   >
             <intent-filter>
@@ -28,7 +29,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.hlidskialf.android.tonepicker.OtherIntentPicker"/>
+        <activity android:name="com.hlidskialf.android.tonepicker.OtherIntentPicker"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                  />
 
         <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity" 
                   android:theme="@android:style/Theme.NoTitleBar"/>
