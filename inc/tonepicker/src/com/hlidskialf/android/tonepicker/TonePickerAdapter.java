@@ -164,7 +164,8 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     mContext = context;
     mContentResolver = mContext.getContentResolver();
     mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    mRingtoneManager = new RingtoneManager(mContext);
+
+
     mShowSlots = show_bragi_slots;
 
     mAlbumNames = new LinkedHashMap<Integer,String>();
