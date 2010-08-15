@@ -40,7 +40,6 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   private Context mContext;
   private LayoutInflater mInflater;
   private ContentResolver mContentResolver;
-  private RingtoneManager mRingtoneManager;
   private boolean mShowSlots;
   private long mSelectedId=-1;
 
@@ -87,9 +86,12 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       public Tone() {}
     };
 
-    public ToneCursor() {}
-    public ToneCursor(Cursor c) {
+    public ToneCursor() { init(); }
+    public ToneCursor(Cursor c) { 
+      init();
       mCursor = c;
+    }
+    protected void init() {
       mTones = new LinkedHashMap<Integer,Tone>();
     }
     public Tone getTone(int position) {
@@ -107,7 +109,14 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
   class BuiltinToneCursor extends ToneCursor
   {
-    public BuiltinToneCursor(Cursor c) { super(c); }
+    private RingtoneManager mRingtoneManager;
+    public BuiltinToneCursor(int ringtone_type) { 
+      init();
+      mRingtoneManager = new RingtoneManager(mContext);
+      mRingtoneManager.setType(ringtone_type);
+      mRingtoneManager.setIncludeDrm(true);
+      mCursor = mRingtoneManager.getCursor();
+    }
     public Tone cacheTone(int position) {
       mCursor.moveToPosition(position);
       Tone tone = new Tone();
@@ -291,10 +300,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
 
   private BuiltinToneCursor _builtin_cursor(int ringtone_type)
   {
-    RingtoneManager mgr = new RingtoneManager(mContext);
-    mgr.setType(ringtone_type);
-    mgr.setIncludeDrm(true);
-    return new BuiltinToneCursor( mgr.getCursor() );
+    return new BuiltinToneCursor(ringtone_type);
   }
 
   private Cursor _album_cursor()
