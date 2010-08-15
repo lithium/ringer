@@ -7,7 +7,7 @@
         android:id="@android:id/icon1"
         android:layout_width="24dp"
         android:layout_height="?android:attr/listPreferredItemHeight"
-        android:src="@android:drawable/ic_menu_edit"
+        android:src="@drawable/ic_listview_star"
         android:layout_alignParentLeft="true"
     />
     <CheckedTextView

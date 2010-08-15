@@ -90,12 +90,12 @@ public class BragiActivity extends ListActivity
         v = (ImageView)findViewById(R.id.actionbar_button1);
         v.setOnClickListener(this);
         v.setVisibility(View.VISIBLE);
-        v.setImageResource(android.R.drawable.ic_menu_add);
+        v.setImageResource(R.drawable.ic_action_add);
 
         v = (ImageView)findViewById(R.id.actionbar_button2);
         v.setOnClickListener(this);
         v.setVisibility(View.VISIBLE);
-        v.setImageResource(android.R.drawable.ic_menu_preferences);
+        v.setImageResource(R.drawable.ic_action_star);
 
         ListView mListView = getListView();
         mListView.setItemsCanFocus(false);

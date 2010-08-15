@@ -55,12 +55,12 @@ public class SlotEditorActivity extends ListActivity
 
         v = (ImageView)findViewById(R.id.actionbar_button1);
         v.setOnClickListener(this);
-        v.setImageResource(android.R.drawable.ic_menu_add);
+        v.setImageResource(R.drawable.ic_action_add);
         v.setVisibility(View.VISIBLE);
 
         v = (ImageView)findViewById(R.id.actionbar_button2);
         v.setOnClickListener(this);
-        v.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+        v.setImageResource(R.drawable.ic_action_cancel);
         v.setVisibility(View.VISIBLE);
 
         mDbHelper = new BragiDatabase(this);
