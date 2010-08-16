@@ -15,6 +15,7 @@
     <string name="activity_sloteditor">Slots</string>
     <string name="activity_profileeditor">Edit Profile</string>
     <string name="activity_profileeditorvolume">Edit Profile Volumes</string>
+    <string name="activity_profileeditorringtones">Edit Profile Ringtones</string>
 
 
     <!-- default profile names -->
@@ -36,7 +37,9 @@
     <string name="unset"></string>
     <string name="profile_editor_name">Profile Name</string>
     <string name="profile_editor_volume_screen">Volume Settings</string>
-    <string name="profile_editor_volume_screen_summary">silent mode / vibrate / volume levels</string>
+    <string name="profile_editor_volume_screen_summary">Volume sliders</string>
+    <string name="profile_editor_ringtones_screen">Ringtones</string>
+    <string name="profile_editor_ringtones_screen_summary">Configure ringer slots</string>
     <string name="profile_editor_default_ring">Default Ringtone</string>
     <string name="profile_editor_default_notify">Default Notification</string>
     <string name="profile_editor_default_alarm">Default Alarm</string>

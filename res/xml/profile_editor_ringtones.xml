@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference android:key="default_ring"
+      android:persistent="false"
+      android:title="@string/profile_editor_default_ring"
+      />
+    <Preference android:key="default_notify"
+      android:persistent="false"
+      android:title="@string/profile_editor_default_notify"
+      />
+    <Preference android:key="default_alarm"
+      android:persistent="false"
+      android:title="@string/profile_editor_default_alarm"
+      />
+</PreferenceScreen>

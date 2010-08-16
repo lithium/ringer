@@ -40,5 +40,7 @@
                   android:theme="@android:style/Theme.NoTitleBar"/>
         <activity android:name="com.hlidskialf.android.bragi.ProfileEditorVolumeActivity" 
                   android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name="com.hlidskialf.android.bragi.ProfileEditorRingtonesActivity" 
+                  android:theme="@android:style/Theme.NoTitleBar"/>
     </application>
 </manifest> 
