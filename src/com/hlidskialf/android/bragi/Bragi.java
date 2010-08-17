@@ -79,9 +79,15 @@ public class Bragi
       AudioManager audio = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
 
       /* set default ringtone, notification, alarm */
-      Settings.System.putString(mResolver, Settings.System.RINGTONE, mProfile.default_ring);
-      Settings.System.putString(mResolver, Settings.System.NOTIFICATION_SOUND, mProfile.default_notify);
-      if (Build.VERSION.SDK_INT >= 5) Settings.System.putString(mResolver, Settings.System.ALARM_ALERT, mProfile.default_alarm);
+      /* don't change default tones unless something is set */
+      if (mProfile.default_ring != null && !mProfile.default_ring.equals(""))
+        Settings.System.putString(mResolver, Settings.System.RINGTONE, mProfile.default_ring);
+      if (mProfile.default_notify != null && !mProfile.default_notify.equals(""))
+        Settings.System.putString(mResolver, Settings.System.NOTIFICATION_SOUND, mProfile.default_notify);
+      if (Build.VERSION.SDK_INT >= 5) {
+        if (mProfile.default_alarm != null && !mProfile.default_alarm.equals(""))
+          Settings.System.putString(mResolver, Settings.System.ALARM_ALERT, mProfile.default_alarm);
+      }
 
       /* set silent mode */
       if (mProfile.silent_mode == 0) audio.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
