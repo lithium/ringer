@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class BragiDatabase {
   private static final String DATABASE_NAME = "bragi.db";
-  private static final int DATABASE_VERSION = 000704;
+  private static final int DATABASE_VERSION = 801;
 
   public static final String AUTHORITY = "com.hlidskialf.android.provider.bragi";
 
@@ -203,11 +203,12 @@ public class BragiDatabase {
 
 
       q = "INSERT INTO " + SlotColumns.TABLE_NAME + "( "
-        + SlotColumns.NAME + ") VALUES (?)";
-      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_email)});
-      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_sms)});
-      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_im)});
-      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_calendar)});
+        + SlotColumns.NAME + "," 
+        + SlotColumns.SLUG + ") VALUES (?,?)";
+      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_email), "email"});
+      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_sms), "sms"});
+      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_im), "im"});
+      db.execSQL(q, new Object[] {mContext.getString(R.string.default_slot_calendar), "calendar"});
 
       q = "INSERT INTO " + ProfileColumns.TABLE_NAME + "( "
         + ProfileColumns.NAME +", "
@@ -221,15 +222,11 @@ public class BragiDatabase {
         + ProfileColumns.VOLUME_ALARM +", "
         + ProfileColumns.VOLUME_NOTIFY +") VALUES (?,?,?,?, ?,?,?,?,?,?)";
       db.execSQL(q, new Object[] {mContext.getString(R.string.default_profile_home),
-        "0","2","2", "5","6","6","4","7","5" });
+        "0","2","2", "5","10","5","4","7","5" });
       db.execSQL(q, new Object[] {mContext.getString(R.string.default_profile_work),
-        "2","1","1", "4","3","6","0","3","3" });
+        "2","1","1", "4","3","5","0","3","3" });
       db.execSQL(q, new Object[] {mContext.getString(R.string.default_profile_theatre),
         "1","0","0", "0","0","0","0","0","0" });
-      db.execSQL(q, new Object[] {mContext.getString(R.string.default_profile_loud),
-        "0","1","1", "7","7","7","7","7","7" });
-      db.execSQL(q, new Object[] {mContext.getString(R.string.default_profile_music),
-        "0","0","0", "0","7","6","0","0","0" });
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

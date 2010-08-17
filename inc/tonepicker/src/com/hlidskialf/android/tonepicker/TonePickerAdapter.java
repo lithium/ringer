@@ -70,6 +70,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
   private int mColIdx_track_id;
   private int mColIdx_slot_id;
   private int mColIdx_slot_name;
+  private int mColIdx_slot_slug;
 
   public class ViewHolder {
     CheckedTextView label;
@@ -154,7 +155,8 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       Tone tone = new Tone();
       long slot_id = mCursor.getLong(mColIdx_slot_id);
       tone.name = mCursor.getString(mColIdx_slot_name);
-      tone.uri = Bragi.getUriForSlot(slot_id);
+      String slot_slug = mCursor.getString(mColIdx_slot_slug);
+      tone.uri = Bragi.getUriForSlot(slot_slug);
       return tone;
     }
   }
@@ -325,6 +327,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
     Cursor cursor = db.getAllSlots();
     mColIdx_slot_id = cursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
     mColIdx_slot_name = cursor.getColumnIndex(BragiDatabase.SlotColumns.NAME);
+    mColIdx_slot_slug = cursor.getColumnIndex(BragiDatabase.SlotColumns.SLUG);
 
     return new SlotToneCursor( cursor );
   }

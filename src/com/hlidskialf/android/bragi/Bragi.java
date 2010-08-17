@@ -31,9 +31,9 @@ public class Bragi
   public static final String EXTRA_SHOW_BRAGI_SLOTS=PACKAGE+".extra.SHOW_BRAGI_SLOTS";
 
 
-  public static Uri getUriForSlot(long slot_id)
+  public static Uri getUriForSlot(String slot_slug)
   {
-    Uri ret = Uri.parse("file:///data/data/"+PACKAGE+"/files/slot_"+String.valueOf(slot_id));
+    Uri ret = Uri.parse("file:///data/data/"+PACKAGE+"/files/slot_"+slot_slug);
 
     return ret;
   }
@@ -115,9 +115,11 @@ public class Bragi
       HashMap<Long,Uri> profile_slots = mDb.getProfileSlotHash(mProfileId);
       Cursor slots = mDb.getAllSlots();
       int idx_slot_id = slots.getColumnIndex(BragiDatabase.SlotColumns._ID);
+      int idx_slot_slug = slots.getColumnIndex(BragiDatabase.SlotColumns.SLUG);
       while (slots.moveToNext()) {
         
         long slot_id = slots.getLong(idx_slot_id);
+        String slot_slug = slots.getString(idx_slot_slug);
         Uri uri = null;
 
         if (profile_slots.containsKey(slot_id)) {
@@ -126,7 +128,7 @@ public class Bragi
           Log.v("Bragi/activateProfile", "erasing " + String.valueOf(slot_id));
           /* erase old slot value */
           try {
-            FileOutputStream fos = mContext.openFileOutput("slot_"+String.valueOf(slot_id), Context.MODE_WORLD_READABLE); 
+            FileOutputStream fos = mContext.openFileOutput("slot_"+slot_slug, Context.MODE_WORLD_READABLE); 
             fos.close();
           } catch(java.io.IOException e) { 
           }
@@ -155,7 +157,7 @@ public class Bragi
 
         try {
           FileInputStream fis = new FileInputStream(data);
-          FileOutputStream fos = mContext.openFileOutput("slot_"+String.valueOf(slot_id), Context.MODE_WORLD_READABLE); 
+          FileOutputStream fos = mContext.openFileOutput("slot_"+slot_slug, Context.MODE_WORLD_READABLE); 
 
           int bufsize = Math.min(size, 512384);
           byte[] buffer = new byte[bufsize];
