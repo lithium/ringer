@@ -312,15 +312,7 @@ public class BragiDatabase {
     c.close();
 
     if (hash_slots) {
-      ret.slots = new HashMap<Long,Uri>();
-      Cursor slots_c = getProfileSlots(profile_id);
-      int uri_idx = slots_c.getColumnIndex(ProfileSlotColumns.URI);
-      int slot_idx = slots_c.getColumnIndex(ProfileSlotColumns.SLOT_ID);
-      while (slots_c.moveToNext()) {
-        String uri_str = slots_c.getString(uri_idx);
-        ret.slots.put( slots_c.getLong(slot_idx), uri_str != null ? Uri.parse(uri_str) : null );
-      }
-      slots_c.close();
+      ret.slots = getProfileSlotHash(profile_id);
     }
     db.close();
 
@@ -332,6 +324,19 @@ public class BragiDatabase {
     return db.query(ProfileSlotColumns.TABLE_NAME, ProfileSlotColumns.DEFAULT_PROJECTION, 
       ProfileSlotColumns.PROFILE_ID+"=?", new String[] {String.valueOf(profile_id)},
       null,null, ProfileSlotColumns.DEFAULT_SORT_ORDER);
+  }
+  public HashMap<Long,Uri> getProfileSlotHash(long profile_id)
+  {
+      HashMap<Long,Uri> ret = new HashMap<Long,Uri>();
+      Cursor slots_c = getProfileSlots(profile_id);
+      int uri_idx = slots_c.getColumnIndex(ProfileSlotColumns.URI);
+      int slot_idx = slots_c.getColumnIndex(ProfileSlotColumns.SLOT_ID);
+      while (slots_c.moveToNext()) {
+        String uri_str = slots_c.getString(uri_idx);
+        ret.put( slots_c.getLong(slot_idx), uri_str != null ? Uri.parse(uri_str) : null );
+      }
+      slots_c.close();
+      return ret;
   }
 
   public Cursor getAllProfiles() {

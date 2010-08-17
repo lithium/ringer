@@ -17,6 +17,7 @@ import android.util.Log;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.HashMap;
 
 public class Bragi 
 {
@@ -104,16 +105,27 @@ public class Bragi
       audio.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mProfile.volume_notify, 0);
 
       /* copy slots */
-      Cursor psc = mDb.getProfileSlots(mProfileId);
-      int idx_uri = psc.getColumnIndex(BragiDatabase.ProfileSlotColumns.URI);
-      int idx_slot_id = psc.getColumnIndex(BragiDatabase.ProfileSlotColumns.SLOT_ID);
-      while (psc.moveToNext()) {
+
+      HashMap<Long,Uri> profile_slots = mDb.getProfileSlotHash(mProfileId);
+      Cursor slots = mDb.getAllSlots();
+      int idx_slot_id = slots.getColumnIndex(BragiDatabase.SlotColumns._ID);
+      while (slots.moveToNext()) {
         
-        long slot_id = psc.getLong(idx_slot_id);
-        String uri_str = psc.getString(idx_uri);
-        if (uri_str == null)
+        long slot_id = slots.getLong(idx_slot_id);
+        Uri uri = null;
+
+        if (profile_slots.containsKey(slot_id)) {
+          uri = profile_slots.get(slot_id);
+        } else {
+          Log.v("Bragi/activateProfile", "erasing " + String.valueOf(slot_id));
+          /* erase old slot value */
+          try {
+            FileOutputStream fos = mContext.openFileOutput("slot_"+String.valueOf(slot_id), Context.MODE_WORLD_READABLE); 
+            fos.close();
+          } catch(java.io.IOException e) { 
+          }
           continue;
-        Uri uri = Uri.parse( uri_str );
+        }
 
         Cursor c = mResolver.query(uri, new String[] {
           MediaStore.Audio.Media._ID,
@@ -152,7 +164,7 @@ public class Bragi
         }
 
       }
-      psc.close();
+      slots.close();
 
     
       return true;
