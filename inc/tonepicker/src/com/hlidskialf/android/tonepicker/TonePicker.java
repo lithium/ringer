@@ -84,9 +84,11 @@ public class TonePicker extends ExpandableListActivity
     if (existing_uri != null) {
       mHeaderExisting = _add_static_view(getString(R.string.existing_ringtone), existing_uri);
     }
+    /*
     if (default_uri != null) {
       mHeaderDefault = _add_static_view(getString(R.string.default_ringtone), default_uri);
     }
+    */
     View v = mInflater.inflate(R.layout.tonepicker_footer,null);
     mFooterOthers = (TextView)v.findViewById(android.R.id.text1);
     mFooterOthers.setText(R.string.other_apps);
@@ -102,6 +104,10 @@ public class TonePicker extends ExpandableListActivity
 
     mAdapter = new TonePickerAdapter(this, show_bragi_slots);
     setListAdapter(mAdapter);
+
+    if (show_bragi_slots) {
+      mListView.expandGroup(0); // open up bragi slots
+    }
   }
 
   private HeaderViewHolder _add_static_view(String label, Uri uri)
