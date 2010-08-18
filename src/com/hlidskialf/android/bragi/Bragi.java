@@ -117,14 +117,16 @@ public class Bragi
       int idx_slot_id = slots.getColumnIndex(BragiDatabase.SlotColumns._ID);
       int idx_slot_slug = slots.getColumnIndex(BragiDatabase.SlotColumns.SLUG);
       while (slots.moveToNext()) {
-        
         long slot_id = slots.getLong(idx_slot_id);
         String slot_slug = slots.getString(idx_slot_slug);
         Uri uri = null;
 
         if (profile_slots.containsKey(slot_id)) {
           uri = profile_slots.get(slot_id);
-        } else {
+        }
+
+        if (uri == null)
+        {
           Log.v("Bragi/activateProfile", "erasing " + String.valueOf(slot_id));
           /* erase old slot value */
           try {
