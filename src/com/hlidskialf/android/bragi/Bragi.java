@@ -77,7 +77,12 @@ public class Bragi
       mDialog.show();
 
       SharedPreferences prefs = mContext.getSharedPreferences(Bragi.PREFERENCES, 0);
-      int slot_size = prefs.getInt(Bragi.PREF_MAX_SLOT_SIZE, Bragi.PREF_MAX_SLOT_SIZE_DEFAULT);
+      int slot_size = Bragi.PREF_MAX_SLOT_SIZE_DEFAULT;
+      try {
+        slot_size = prefs.getInt(Bragi.PREF_MAX_SLOT_SIZE, Bragi.PREF_MAX_SLOT_SIZE_DEFAULT);
+      } catch (java.lang.ClassCastException e) {
+        // not sure why this happens...
+      }
       mMaxSlotSize = 1048576 * slot_size;
       mClearSlots = prefs.getBoolean(Bragi.PREF_CLEAR_SLOTS, Bragi.PREF_CLEAR_SLOTS_DEFAULT);
       prefs = null;
