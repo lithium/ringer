@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <CheckBoxPreference android:key="clear_slots"
+    android:title="@string/preference_clear_slots_title"
+    android:summary="@string/preference_clear_slots_summary"
+    android:defaultValue="true"
+    android:persistent="true"
+    />
+  <EditTextPreference android:key="max_slot_size"
+    android:title="@string/preference_max_slot_size_title"
+    android:summary="@string/preference_max_slot_size_summary"
+    android:defaultValue="2"
+    android:persistent="true"
+    />
+  <PreferenceCategory android:title="@string/preference_help_category">
+    <PreferenceScreen android:key="screen_show_tutorial"
+      android:title="@string/preference_show_tutorial_title"
+      android:summary="@string/preference_show_tutorial_summary"
+      android:persistent="false"
+      />
+    <PreferenceScreen android:key="screen_about"
+      android:title="@string/preference_about_title"
+      android:summary="@string/preference_about_summary"
+      android:persistent="false"
+      />
+  </PreferenceCategory>
+</PreferenceScreen>

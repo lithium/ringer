@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +36,12 @@ public class BragiActivity extends ListActivity
     private static final int MENU_ACTIVATE_ID=1;
     private static final int MENU_EDIT_ID=2;
     private static final int MENU_DELETE_ID=3;
+    private static final int MENU_PREFERENCES_ID=4;
+    private static final int MENU_ABOUT_ID=5;
+    private static final int MENU_HELP_ID=6;
 
     private static final int RESULT_EDIT_PROFILE=1;
+    private static final int RESULT_PREFERENCES=2;
 
     private class ProfileAdapter extends SimpleCursorAdapter
     {
@@ -112,7 +117,7 @@ public class BragiActivity extends ListActivity
         int mColIdx_slot_id = mProfileCursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
 
         SharedPreferences prefs = getSharedPreferences(Bragi.PREFERENCES, 0);
-        mActiveProfileId = prefs.getLong(Bragi.PREF_ACTIVE_PROFILE, -1);
+        mActiveProfileId = prefs.getLong(Bragi.PREF_ACTIVE_PROFILE, Bragi.PREF_ACTIVE_PROFILE_DEFAULT);
         if (mActiveProfileId != -1) {
           // find position for id
           mProfileCursor.moveToFirst();
@@ -130,11 +135,44 @@ public class BragiActivity extends ListActivity
           }
         }
 
-
-
+        boolean seen_tutorial = prefs.getBoolean(Bragi.PREF_SEEN_TUTORIAL, Bragi.PREF_SEEN_TUTORIAL_DEFAULT);
+        if (! seen_tutorial) {
+          prefs.edit().putBoolean(Bragi.PREF_SEEN_TUTORIAL, true).commit();
+          // XXX: show tutorial dialog
+        }
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu (Menu menu)
+    {
+      super.onCreateOptionsMenu(menu);
+
+      MenuItem mi;
+      mi = menu.add(Menu.NONE, MENU_HELP_ID, Menu.NONE, R.string.menu_option_help);
+      mi.setIcon(android.R.drawable.ic_menu_help);
+      mi = menu.add(Menu.NONE, MENU_ABOUT_ID, Menu.NONE, R.string.menu_option_about);
+      mi.setIcon(android.R.drawable.ic_menu_info_details);
+      mi = menu.add(Menu.NONE, MENU_PREFERENCES_ID, Menu.NONE, R.string.menu_option_preferences);
+      mi.setIcon(android.R.drawable.ic_menu_preferences);
+
+      return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item)
+    {
+      int id = item.getItemId();
+      if (id == MENU_PREFERENCES_ID) {
+        Intent intent = new Intent(this, BragiPreferencesActivity.class);
+        startActivityForResult(intent, RESULT_PREFERENCES);
+        return true;
+      }
+      return false;
+    }
+
+
+    @Override
     public void finish() {
       mProfileCursor.close();
       mDbHelper.close();

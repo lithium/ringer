@@ -9,9 +9,15 @@
     <string name="rename">Rename</string>
     <string name="delete">Delete</string>
 
+    <!-- option menu entries -->
+    <string name="menu_option_preferences">Preferences</string>
+    <string name="menu_option_about">About</string>
+    <string name="menu_option_help">Help</string>
+
 
     <!-- activity names -->
     <string name="activity_main">Profiles</string>
+    <string name="activity_preferences">Preferences</string>
     <string name="activity_sloteditor">Slots</string>
     <string name="activity_profileeditor">Edit Profile</string>
     <string name="activity_profileeditorvolume">Edit Profile Volumes</string>
@@ -66,8 +72,21 @@
     <!-- confirm delete dialog -->
     <string name="confirm_delete_profile_dialog_title">Delete profile?</string>
     <string name="confirm_delete_profile_dialog_message">Are you sure you want to delete the \'%s\' profile?</string>
-
     <string name="confirm_delete_slot_dialog_title">Delete slot?</string>
     <string name="confirm_delete_slot_dialog_message">Are you sure you want to delete the \'%s\' slot?</string>
+
+    <!-- app preferences -->
+    <string name="preference_clear_slots_title">Erase Slots If Empty</string>
+    <string name="preference_clear_slots_summary">Erase the previous slot when changing profile</string>
+    <string name="preference_max_slot_size_title">Max Slot Size</string>
+    <string name="preference_max_slot_size_summary">Maximum size in MB per ringtone to cache</string>
+    <string name="preference_help_category">Help</string>
+    <string name="preference_show_tutorial_title">Show Tutorial</string>
+    <string name="preference_show_tutorial_summary">Show the Getting Started tutorial again</string>
+    <string name="preference_about_title">About</string>
+    <string name="preference_about_summary">About ringer</string>
+
+    <!-- options menu -->
+    
     
 </resources>

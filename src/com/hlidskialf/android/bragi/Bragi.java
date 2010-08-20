@@ -23,8 +23,15 @@ public class Bragi
 {
   public static final String PACKAGE="com.hlidskialf.android.bragi";
 
-  public static final String PREFERENCES="bragipreferences.db";
+  public static final String PREFERENCES=PACKAGE+"_preferences";
   public static final String PREF_ACTIVE_PROFILE="active_profile";
+  public static final long PREF_ACTIVE_PROFILE_DEFAULT=-1;
+  public static final String PREF_SEEN_TUTORIAL="seen_tutorial";
+  public static final boolean PREF_SEEN_TUTORIAL_DEFAULT=false;
+  public static final String PREF_MAX_SLOT_SIZE="max_slot_size";
+  public static final int PREF_MAX_SLOT_SIZE_DEFAULT=2;
+  public static final String PREF_CLEAR_SLOTS="clear_slots";
+  public static final boolean PREF_CLEAR_SLOTS_DEFAULT=true;
 
   public static final String EXTRA_PROFILE_ID=PACKAGE+".extra.PROFILE_ID";
   public static final String EXTRA_PROFILE_VALUES=PACKAGE+".extra.PROFILE_VALUES";
@@ -49,6 +56,8 @@ public class Bragi
     private BragiDatabase mDb;
     private BragiDatabase.ProfileModel mProfile;
     private ProgressDialog mDialog;
+    private int mMaxSlotSize;
+    private boolean mClearSlots;
 
     public ActiveProfileTask(Context context, ContentResolver resolver, long profile_id)
     {
@@ -66,6 +75,12 @@ public class Bragi
       mDialog.setIndeterminate(true);
       mDialog.setCancelable(false);
       mDialog.show();
+
+      SharedPreferences prefs = mContext.getSharedPreferences(Bragi.PREFERENCES, 0);
+      int slot_size = prefs.getInt(Bragi.PREF_MAX_SLOT_SIZE, Bragi.PREF_MAX_SLOT_SIZE_DEFAULT);
+      mMaxSlotSize = 1048576 * slot_size;
+      mClearSlots = prefs.getBoolean(Bragi.PREF_CLEAR_SLOTS, Bragi.PREF_CLEAR_SLOTS_DEFAULT);
+      prefs = null;
 
     }
 
@@ -127,13 +142,16 @@ public class Bragi
 
         if (uri == null)
         {
-          Log.v("Bragi/activateProfile", "erasing " + String.valueOf(slot_id));
-          /* erase old slot value */
-          try {
-            FileOutputStream fos = mContext.openFileOutput("slot_"+slot_slug, Context.MODE_WORLD_READABLE); 
-            fos.close();
-          } catch(java.io.IOException e) { 
+          if (mClearSlots) {
+            /* erase old slot value */
+            Log.v("Bragi/activateProfile", "erasing " + String.valueOf(slot_id));
+            try {
+              FileOutputStream fos = mContext.openFileOutput("slot_"+slot_slug, Context.MODE_WORLD_READABLE); 
+              fos.close();
+            } catch(java.io.IOException e) { 
+            }
           }
+
           continue;
         }
 
@@ -161,7 +179,7 @@ public class Bragi
           FileInputStream fis = new FileInputStream(data);
           FileOutputStream fos = mContext.openFileOutput("slot_"+slot_slug, Context.MODE_WORLD_READABLE); 
 
-          int bufsize = Math.min(size, 512384);
+          int bufsize = Math.min(size, mMaxSlotSize);
           byte[] buffer = new byte[bufsize];
           int red = fis.read(buffer, 0, bufsize);
           fis.close();
