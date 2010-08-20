@@ -1,6 +1,7 @@
 package com.hlidskialf.android.bragi;
 
 import android.os.Bundle;
+import android.content.ComponentName;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.hlidskialf.android.app.AboutDialog;
 
 public class BragiPreferencesActivity extends PreferenceActivity
                 implements View.OnClickListener
@@ -40,5 +43,16 @@ public class BragiPreferencesActivity extends PreferenceActivity
     if (id == R.id.actionbar_button1) {
       finish();
     }
+  }
+
+  public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) 
+  {
+    String key = preference.getKey();
+    if (key != null && key.equals("screen_about")) {
+      AboutDialog dialog = new AboutDialog(this, new ComponentName(this, BragiActivity.class), R.string.about_dialog_title, R.string.about_dialog_message);
+      return true;
+    }
+
+    return false;
   }
 }

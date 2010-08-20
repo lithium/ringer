@@ -3,6 +3,7 @@ package com.hlidskialf.android.bragi;
 import android.app.ListActivity;
 import android.app.AlertDialog;
 import android.database.Cursor;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.widget.CheckedTextView;
 import android.widget.SimpleCursorAdapter;
 
 import com.hlidskialf.android.app.OneLineInputDialog;
+import com.hlidskialf.android.app.AboutDialog;
 
 public class BragiActivity extends ListActivity
                 implements View.OnClickListener,
@@ -166,6 +168,12 @@ public class BragiActivity extends ListActivity
       if (id == MENU_PREFERENCES_ID) {
         Intent intent = new Intent(this, BragiPreferencesActivity.class);
         startActivityForResult(intent, RESULT_PREFERENCES);
+        return true;
+      }
+      else
+      if (id == MENU_ABOUT_ID) {
+
+        AboutDialog dialog = new AboutDialog(this, new ComponentName(this, BragiActivity.class), R.string.about_dialog_title, R.string.about_dialog_message);
         return true;
       }
       return false;

@@ -86,7 +86,9 @@
     <string name="preference_about_title">About</string>
     <string name="preference_about_summary">About ringer</string>
 
-    <!-- options menu -->
+    <!-- about dialog -->
+    <string name="about_dialog_title">About Ringer</string>
+    <string name="about_dialog_message">\n<b>Original Source</b>\n<u>M. Wiggins</u>\n\n<b>Source Code</b>\n<u>http://github.com/lithium/ringer</u>\n\n<b>Website</b>\n<u>http://android.hlidskialf.com/apps/ringer</u>\n\nPublished by Hlidskialf Software\n\nNo warranty of any kind.</string>
     
     
 </resources>
