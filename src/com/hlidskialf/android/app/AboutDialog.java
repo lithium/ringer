@@ -68,6 +68,7 @@ public class AboutDialog
       .setView(layout)
       .setPositiveButton(android.R.string.ok, null)
       .setNegativeButton(android.R.string.cancel, null)
+      .setIcon(android.R.drawable.ic_dialog_info)
       .show();
   }
 
