@@ -53,7 +53,7 @@ public class BragiPreferencesActivity extends PreferenceActivity
       AboutDialog dialog = new AboutDialog(this, new ComponentName(this, BragiActivity.class), R.string.about_dialog_title, R.string.about_dialog_message);
       return true;
     }
-    if (key != null && key.equals("screen_help")) {
+    if (key != null && key.equals("screen_show_tutorial")) {
       Intent intent = new Intent(this, BragiTutorialActivity.class);
       startActivityForResult(intent, -1);
       return true;
