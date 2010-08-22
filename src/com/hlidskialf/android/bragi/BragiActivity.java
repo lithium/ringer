@@ -34,6 +34,7 @@ public class BragiActivity extends ListActivity
     private long mActiveProfileId=-1;
     private long mActivePosition=-1;
     private long mConfirmDeleteId=-1;
+    private boolean mShowTutorial;
 
     private static final int MENU_ACTIVATE_ID=1;
     private static final int MENU_EDIT_ID=2;
@@ -120,6 +121,7 @@ public class BragiActivity extends ListActivity
         int mColIdx_slot_id = mProfileCursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
 
         SharedPreferences prefs = getSharedPreferences(Bragi.PREFERENCES, 0);
+
         mActiveProfileId = prefs.getLong(Bragi.PREF_ACTIVE_PROFILE, Bragi.PREF_ACTIVE_PROFILE_DEFAULT);
         if (mActiveProfileId != -1) {
           // find position for id
@@ -141,7 +143,7 @@ public class BragiActivity extends ListActivity
         boolean seen_tutorial = prefs.getBoolean(Bragi.PREF_SEEN_TUTORIAL, Bragi.PREF_SEEN_TUTORIAL_DEFAULT);
         if (! seen_tutorial) {
           prefs.edit().putBoolean(Bragi.PREF_SEEN_TUTORIAL, true).commit();
-          // XXX: show tutorial dialog
+          mShowTutorial = true;
         }
 
     }
@@ -307,5 +309,17 @@ public class BragiActivity extends ListActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
         mProfileCursor.requery();
+    }
+
+    @Override
+    public void onResume()
+    {
+      super.onResume();
+
+      if (mShowTutorial) {
+        mShowTutorial = false;
+        Intent intent = new Intent(this, BragiTutorialActivity.class);
+        startActivityForResult(intent, RESULT_TUTORIAL);
+      }
     }
 }

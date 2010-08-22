@@ -39,7 +39,9 @@
 
   <ScrollView
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent" 
+    android:padding="6dp"
+    >
     <TextView android:id="@android:id/text1"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
@@ -52,6 +54,8 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:background="@android:drawable/bottom_bar"
+    android:gravity="center_vertical"
     >
     <Button android:id="@android:id/button1"
       android:layout_width="0dp"
