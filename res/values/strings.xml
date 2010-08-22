@@ -9,6 +9,7 @@
     <string name="rename">Rename</string>
     <string name="delete">Delete</string>
 
+
     <!-- option menu entries -->
     <string name="menu_option_preferences">Preferences</string>
     <string name="menu_option_about">About</string>
@@ -96,10 +97,12 @@
     <string name="back">Back</string>
     <string name="done">Done</string>
     <string name="tutorial_page1_title">1. What Is Ringer?</string>
-    <string name="tutorial_page1_content">Ringer is sound profiles.\nSilent mode, vibrate, volume levels, and ringtones</string>
+    <string name="tutorial_page1_content">Ringer provides audio profiles.\n\nCreate any number of profiles and configure the silent-mode, vibration, volume levels and ringtones for each.</string>
     <string name="tutorial_page2_title">2. First Time Setup</string>
-    <string name="tutorial_page2_content">First create all your slots, e.g. Email, Joe Ringtone, Joe SMS\nThen go into each app and set its ringtone to the slot</string>
+    <string name="tutorial_page2_content">To get ringtone profiles you need to use Slots.\n\nA Slot is a container for a ringtone.\n\nFirst create all your slots.\nThen go into each app\'s settings and set the ringtone to it\'s matching Ringer Slot.\n\nYou only have to do this once.</string>
     <string name="tutorial_page3_title">3. Create Your Profiles</string>
-    <string name="tutorial_page3_content">Now you are ready to create your profiles!</string>
+    <string name="tutorial_page3_content">Once you have assigned each app a slot, set up your profiles and assign a ringtone to a profile\'s slot.\n\nActivate a profile and have it automatically change the ringtone for each app that is using a slot.</string>
 
+    <!-- tonepicker -->
+    <string name="bragi_slots">Ringer Slots</string>
 </resources>

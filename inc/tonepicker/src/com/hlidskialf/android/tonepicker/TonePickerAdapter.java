@@ -259,7 +259,7 @@ public class TonePickerAdapter extends BaseExpandableListAdapter {
       text = BUILTIN_NAMES[groupPosition - INDEX_FIRST_BUILTIN];
     else
     if (mShowSlots && groupPosition == INDEX_SLOTS)
-      text = "Bragi Slots";
+      text = mContext.getString(R.string.bragi_slots);
     tv.setText(text);
 
     return convertView;
