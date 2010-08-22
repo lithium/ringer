@@ -45,5 +45,8 @@
 
         <activity android:name="com.hlidskialf.android.bragi.BragiPreferencesActivity" 
                   android:theme="@android:style/Theme.NoTitleBar"/>
+
+        <activity android:name="com.hlidskialf.android.bragi.BragiTutorialActivity" 
+                  android:theme="@style/Theme.Dialog.NoTitleBar"/>
     </application>
 </manifest> 

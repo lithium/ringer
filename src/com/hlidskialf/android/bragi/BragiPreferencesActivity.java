@@ -2,6 +2,7 @@ package com.hlidskialf.android.bragi;
 
 import android.os.Bundle;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
@@ -50,6 +51,11 @@ public class BragiPreferencesActivity extends PreferenceActivity
     String key = preference.getKey();
     if (key != null && key.equals("screen_about")) {
       AboutDialog dialog = new AboutDialog(this, new ComponentName(this, BragiActivity.class), R.string.about_dialog_title, R.string.about_dialog_message);
+      return true;
+    }
+    if (key != null && key.equals("screen_help")) {
+      Intent intent = new Intent(this, BragiTutorialActivity.class);
+      startActivityForResult(intent, -1);
       return true;
     }
 

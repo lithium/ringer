@@ -90,5 +90,16 @@
     <string name="about_dialog_title">About Ringer</string>
     <string name="about_dialog_message">\n<b>Original Source</b>\n<u>M. Wiggins</u>\n\n<b>Source Code</b>\n<u>http://github.com/lithium/ringer</u>\n\n<b>Website</b>\n<u>http://android.hlidskialf.com/apps/ringer</u>\n\nPublished by Hlidskialf Software\n\nNo warranty of any kind.</string>
     
-    
+    <!-- tutorial -->
+    <string name="skip">Skip</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="done">Done</string>
+    <string name="tutorial_page1_title">1. What Is Ringer?</string>
+    <string name="tutorial_page1_content">Ringer is sound profiles.\nSilent mode, vibrate, volume levels, and ringtones</string>
+    <string name="tutorial_page2_title">2. First Time Setup</string>
+    <string name="tutorial_page2_content">First create all your slots, e.g. Email, Joe Ringtone, Joe SMS\nThen go into each app and set its ringtone to the slot</string>
+    <string name="tutorial_page3_title">3. Create Your Profiles</string>
+    <string name="tutorial_page3_content">Now you are ready to create your profiles!</string>
+
 </resources>

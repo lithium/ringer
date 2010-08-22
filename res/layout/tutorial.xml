@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  >
+
+  <LinearLayout android:id="@+id/topPanel"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="54dip"
+      android:orientation="vertical">
+      <LinearLayout android:id="@+id/title_template"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_vertical"
+          android:layout_marginTop="6dip"
+          android:layout_marginBottom="9dip"
+          android:layout_marginLeft="10dip"
+          android:layout_marginRight="10dip">
+          <ImageView android:id="@+id/icon"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="top"
+              android:paddingTop="6dip"
+              android:paddingRight="10dip"
+              android:src="@android:drawable/ic_dialog_info" />
+          <TextView android:id="@android:id/title" 
+              style="?android:attr/textAppearanceLarge"
+              android:singleLine="true"
+              android:ellipsize="end"
+              android:text="@string/tutorial_page1_title"
+              android:layout_width="fill_parent" 
+              android:layout_height="wrap_content" />
+      </LinearLayout>
+  </LinearLayout>
+
+
+  <ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView android:id="@android:id/text1"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1.0"
+      style="?android:attr/textAppearanceMedium"
+      />
+  </ScrollView>
+    
+  <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    >
+    <Button android:id="@android:id/button1"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/next"
+      />
+    <Button android:id="@android:id/button2"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/back"
+      />
+    <Button android:id="@android:id/button3"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:text="@string/skip"
+      />
+  </LinearLayout>
+  
+</LinearLayout>
+

@@ -44,6 +44,7 @@ public class BragiActivity extends ListActivity
 
     private static final int RESULT_EDIT_PROFILE=1;
     private static final int RESULT_PREFERENCES=2;
+    private static final int RESULT_TUTORIAL=3;
 
     private class ProfileAdapter extends SimpleCursorAdapter
     {
@@ -168,6 +169,12 @@ public class BragiActivity extends ListActivity
       if (id == MENU_PREFERENCES_ID) {
         Intent intent = new Intent(this, BragiPreferencesActivity.class);
         startActivityForResult(intent, RESULT_PREFERENCES);
+        return true;
+      }
+      else
+      if (id == MENU_HELP_ID) {
+        Intent intent = new Intent(this, BragiTutorialActivity.class);
+        startActivityForResult(intent, RESULT_TUTORIAL);
         return true;
       }
       else
