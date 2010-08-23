@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
@@ -8,6 +8,7 @@
   <LinearLayout android:id="@+id/topPanel"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
       android:minHeight="54dip"
       android:orientation="vertical">
       <LinearLayout android:id="@+id/title_template"
@@ -36,26 +37,13 @@
       </LinearLayout>
   </LinearLayout>
 
-
-  <ScrollView
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" 
-    android:padding="6dp"
-    >
-    <TextView android:id="@android:id/text1"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:layout_weight="1.0"
-      style="?android:attr/textAppearanceMedium"
-      />
-  </ScrollView>
-    
-  <LinearLayout
+  <LinearLayout android:id="@+id/bottom_bar"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@android:drawable/bottom_bar"
     android:gravity="center_vertical"
+    android:layout_alignParentBottom="true"
     >
     <Button android:id="@android:id/button1"
       android:layout_width="0dp"
@@ -76,6 +64,24 @@
       android:text="@string/skip"
       />
   </LinearLayout>
+
+
+  <ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:padding="6dp"
+    android:fillViewport="true"
+    android:layout_above="@id/bottom_bar"
+    android:layout_below="@id/topPanel"
+    >
+    <TextView android:id="@android:id/text1"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1.0"
+      style="?android:attr/textAppearanceMedium"
+      />
+  </ScrollView>
+    
   
-</LinearLayout>
+</RelativeLayout>
 
