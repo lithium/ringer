@@ -43,7 +43,7 @@
     <!-- edit profile -->
     <string name="unset"></string>
     <string name="profile_editor_name">Profile Name</string>
-    <string name="profile_editor_icon">Icon</string>
+    <string name="profile_editor_icon">Profile Icon</string>
     <string name="profile_editor_volume_screen">Volume Settings</string>
     <string name="profile_editor_volume_screen_summary">Volume sliders</string>
     <string name="profile_editor_ringtones_screen">Ringtones</string>
