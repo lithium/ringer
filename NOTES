@@ -39,18 +39,37 @@ h2. Activities
 #-- slot N
 
 
+h2. Defaults
 
-h2. Default Profiles
-- Normal
-- Loud 
-- Vibrate Only
-- Silent
+h3. Default Profiles
+- Home
+- Theatre 
+- Work
 
-h2. Default Slots
+h3. System Slots
 - ringtone
 - notification
-- reminder
 - alarm
+
+h3. Default Slots
+- calendar
 - email
 - sms
 - im
+
+
+h2. plugins
+
+h2. Wallpaper
+- profile_slug
+- wallpaper drawable
+
+h2. Time Changes
+- profile_slug
+- start_time
+- start_daysofweek
+
+h2. Location Changes
+- profile_slug
+- location 
+- radius

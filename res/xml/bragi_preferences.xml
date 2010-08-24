@@ -12,6 +12,12 @@
     android:defaultValue="2"
     android:persistent="true"
     />
+  <CheckBoxPreference android:key="circle_crop"
+    android:title="@string/preference_circle_crop_title"
+    android:summary="@string/preference_circle_crop_summary"
+    android:defaultValue="false"
+    android:persistent="true"
+    />
   <PreferenceCategory android:title="@string/preference_help_category">
     <PreferenceScreen android:key="screen_show_tutorial"
       android:title="@string/preference_show_tutorial_title"

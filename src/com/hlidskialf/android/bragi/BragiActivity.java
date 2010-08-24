@@ -8,9 +8,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.CheckedTextView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.CursorAdapter;
 
 import com.hlidskialf.android.app.OneLineInputDialog;
 import com.hlidskialf.android.app.AboutDialog;
@@ -47,37 +50,59 @@ public class BragiActivity extends ListActivity
     private static final int RESULT_PREFERENCES=2;
     private static final int RESULT_TUTORIAL=3;
 
-    private class ProfileAdapter extends SimpleCursorAdapter
+    private class ProfileAdapter extends CursorAdapter
     {
-        public ProfileAdapter(Context context, int layout, Cursor c, String[] from, int[] to)
+        private class ViewHolder {
+          ImageView icon;
+          CheckedTextView text;
+        }
+        private LayoutInflater mInflater;
+        private int mColIdx_id;
+        private int mColIdx_icon;
+        private int mColIdx_name;
+
+        public ProfileAdapter(Context context, Cursor c)
         {
-          super(context,layout,c,from,to);
+          super(context,c);
+          mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+          mColIdx_id = c.getColumnIndex(BragiDatabase.ProfileColumns._ID);
+          mColIdx_icon = c.getColumnIndex(BragiDatabase.ProfileColumns.ICON);
+          mColIdx_name = c.getColumnIndex(BragiDatabase.ProfileColumns.NAME);
         }
 
         public void bindView (View view, Context context, Cursor cursor)
         {
-          super.bindView(view,context,cursor);
+          ViewHolder holder = (ViewHolder)view.getTag();
 
-          ImageView iv = (ImageView)view.findViewById(android.R.id.icon1);
-          final int col_idx = cursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
-          final long profile_id = cursor.getLong(col_idx);
-          iv.setOnClickListener(new View.OnClickListener() {
+          final long profile_id = cursor.getLong(mColIdx_id);
+          holder.icon.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
               edit_profile(0,profile_id);
             }
           });
-        }
 
-        public View getView(int position, View convertView, ViewGroup parent)
+          final byte[] blob = cursor.getBlob(mColIdx_icon);
+          if (blob != null) {
+            Bitmap bmp = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+            holder.icon.setImageBitmap(bmp);
+          }
+          else {
+            holder.icon.setImageResource(R.drawable.ic_listview_star);
+          }
+
+          final String name = cursor.getString(mColIdx_name);
+          holder.text.setText(name);
+
+        }
+        public View newView(Context context, Cursor cursor, ViewGroup parent)
         {
-          View ret = super.getView(position,convertView,parent);
-
-          CheckedTextView ctv = (CheckedTextView)ret.findViewById(android.R.id.text1);
-          ctv.setChecked(position == mActivePosition);
-
-          return ret;
+            View view = mInflater.inflate(R.layout.list_item, null);
+            ViewHolder holder = new ViewHolder();
+            holder.text = (CheckedTextView)view.findViewById(android.R.id.text1);
+            holder.icon = (ImageView)view.findViewById(android.R.id.icon1);
+            view.setTag(holder);
+            return view;
         }
-
 
 
     }
@@ -114,10 +139,7 @@ public class BragiActivity extends ListActivity
 
         mDbHelper = new BragiDatabase(this);
         mProfileCursor = mDbHelper.getAllProfiles();
-        setListAdapter( new ProfileAdapter(this, R.layout.list_item, mProfileCursor, 
-          new String[] { BragiDatabase.ProfileColumns.NAME }, 
-          new int[] {android.R.id.text1})
-        );
+        setListAdapter( new ProfileAdapter(this, mProfileCursor) );
         int mColIdx_slot_id = mProfileCursor.getColumnIndex(BragiDatabase.SlotColumns._ID);
 
         SharedPreferences prefs = getSharedPreferences(Bragi.PREFERENCES, 0);

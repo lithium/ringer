@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -34,8 +36,10 @@ public class ProfileEditorActivity extends PreferenceActivity
 
     public static final int RESULT_VOLUME_SCREEN=1;
     public static final int RESULT_RINGTONES_SCREEN=2;
+    public static final int RESULT_ICON_SCREEN=3;
 
 
+    public boolean mUseCircleCrop = false;
 
 
     @Override
@@ -44,6 +48,9 @@ public class ProfileEditorActivity extends PreferenceActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         addPreferencesFromResource(R.xml.profile_editor);
+
+        SharedPreferences prefs = getSharedPreferences(Bragi.PREFERENCES, 0);
+        mUseCircleCrop = prefs.getBoolean(Bragi.PREF_CIRCLE_CROP, Bragi.PREF_CIRCLE_CROP_DEFAULT);
 
 
         ImageView v;
@@ -152,10 +159,22 @@ public class ProfileEditorActivity extends PreferenceActivity
             intent.putExtra(Bragi.EXTRA_PROFILE_VALUES, mProfile.contentValues());
             startActivityForResult(intent, RESULT_VOLUME_SCREEN);
         }
+        else
         if (pref_key.equals("ringtones_screen")) {
             Intent intent = new Intent(this, ProfileEditorRingtonesActivity.class);
             intent.putExtra(Bragi.EXTRA_PROFILE_VALUES, mProfile.contentValues());
             startActivityForResult(intent, RESULT_RINGTONES_SCREEN);
+        }
+        else
+        if (pref_key.equals("icon_screen")) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+            intent.setType("image/*");
+            intent.putExtra("crop", mUseCircleCrop ? "circle" : "true");
+            intent.putExtra("return-data", true);
+            intent.putExtra("aspectX", 1);
+            intent.putExtra("aspectY", 1);
+            startActivityForResult(intent, RESULT_ICON_SCREEN);
+
         }
 
         return true;
@@ -170,6 +189,11 @@ public class ProfileEditorActivity extends PreferenceActivity
           ContentValues values = data.getParcelableExtra(Bragi.EXTRA_PROFILE_VALUES);
           mProfile.updateValues(values);
           mDbHelper.updateProfile(mProfile.id, mProfile.contentValues());
+        }
+        else
+        if (requestCode == RESULT_ICON_SCREEN) {
+          Bitmap crop_data = (Bitmap)data.getParcelableExtra("data");
+          mProfile.icon = Bragi.scaleBitmap(crop_data, 72, 72);
         }
 
       }

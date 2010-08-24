@@ -7,6 +7,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -32,6 +34,8 @@ public class Bragi
   public static final int PREF_MAX_SLOT_SIZE_DEFAULT=2;
   public static final String PREF_CLEAR_SLOTS="clear_slots";
   public static final boolean PREF_CLEAR_SLOTS_DEFAULT=true;
+  public static final String PREF_CIRCLE_CROP="circle_crop";
+  public static final boolean PREF_CIRCLE_CROP_DEFAULT=false;
 
   public static final String EXTRA_PROFILE_ID=PACKAGE+".extra.PROFILE_ID";
   public static final String EXTRA_PROFILE_VALUES=PACKAGE+".extra.PROFILE_VALUES";
@@ -212,5 +216,16 @@ public class Bragi
     SharedPreferences prefs = context.getSharedPreferences(Bragi.PREFERENCES, 0);
     prefs.edit().putLong(Bragi.PREF_ACTIVE_PROFILE, profile_id).commit();
 
+  }
+
+
+  public static Bitmap scaleBitmap(Bitmap src, int new_width, int new_height) {
+    int width = src.getWidth();
+    int height = src.getHeight();
+    float scale_width = ((float) new_width) / width;
+    float scale_height = ((float) new_height) / height;
+    Matrix matrix = new Matrix();
+    matrix.postScale(scale_width, scale_height);
+    return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
   }
 }

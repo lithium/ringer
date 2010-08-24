@@ -6,6 +6,11 @@
       android:title="@string/profile_editor_name"
       />
 
+    <PreferenceScreen android:key="icon_screen"
+      android:persistent="false"
+      android:title="@string/profile_editor_icon"
+      />
+
     <ListPreference android:key="silent_mode"
       android:persistent="false"
       android:title="@string/profile_editor_silent_mode"

@@ -43,6 +43,7 @@
     <!-- edit profile -->
     <string name="unset"></string>
     <string name="profile_editor_name">Profile Name</string>
+    <string name="profile_editor_icon">Icon</string>
     <string name="profile_editor_volume_screen">Volume Settings</string>
     <string name="profile_editor_volume_screen_summary">Volume sliders</string>
     <string name="profile_editor_ringtones_screen">Ringtones</string>
@@ -81,6 +82,8 @@
     <string name="preference_clear_slots_summary">Erase the previous slot when changing profile</string>
     <string name="preference_max_slot_size_title">Max Slot Size</string>
     <string name="preference_max_slot_size_summary">Maximum size in MB per ringtone to cache</string>
+    <string name="preference_circle_crop_title">Circular Icon Crop</string>
+    <string name="preference_circle_crop_summary">Use a circle when cropping iamges for icons</string>
     <string name="preference_help_category">Help</string>
     <string name="preference_show_tutorial_title">Show Tutorial</string>
     <string name="preference_show_tutorial_summary">Show the Getting Started tutorial again</string>

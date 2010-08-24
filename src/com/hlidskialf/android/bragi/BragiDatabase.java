@@ -8,16 +8,21 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.provider.BaseColumns;
 import android.net.Uri;
 
 import java.util.HashMap;
+import java.io.ByteArrayOutputStream;
+
+
 
 
 public class BragiDatabase {
   private static final String DATABASE_NAME = "bragi.db";
-  private static final int DATABASE_VERSION = 801;
+  private static final int DATABASE_VERSION = 807;
 
   public static final String AUTHORITY = "com.hlidskialf.android.provider.bragi";
 
@@ -38,6 +43,7 @@ public class BragiDatabase {
 
 
     public static final String NAME = "name";
+    public static final String ICON = "icon";
     public static final String DEFAULT_RING = "default_ring";
     public static final String DEFAULT_NOTIFY = "default_notification";
     public static final String DEFAULT_ALARM = "default_alarm";
@@ -54,6 +60,7 @@ public class BragiDatabase {
     public static final String[] DEFAULT_PROJECTION = {
       ProfileColumns._ID,
       ProfileColumns.NAME,
+      ProfileColumns.ICON,
       ProfileColumns.DEFAULT_RING,
       ProfileColumns.DEFAULT_NOTIFY,
       ProfileColumns.DEFAULT_ALARM,
@@ -88,6 +95,7 @@ public class BragiDatabase {
   public static final class ProfileModel {
     public long id = -1;
     public String name;
+    public Bitmap icon;
     public String default_ring;
     public String default_notify;
     public String default_alarm;
@@ -121,6 +129,12 @@ public class BragiDatabase {
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_SYSTEM)) != -1) this.volume_system = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_ALARM)) != -1) this.volume_alarm = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_NOTIFY)) != -1) this.volume_notify = c.getInt(idx);
+      if ((idx = c.getColumnIndex(ProfileColumns.ICON)) != -1) {
+        byte[] blob = c.getBlob(idx);
+        if (blob != null) {
+          this.icon = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+        }
+      }
     }
     public void updateValues(ContentValues cv) {
       this.name = cv.getAsString(ProfileColumns.NAME);
@@ -136,6 +150,10 @@ public class BragiDatabase {
       this.volume_system = cv.getAsInteger(ProfileColumns.VOLUME_SYSTEM);
       this.volume_alarm = cv.getAsInteger(ProfileColumns.VOLUME_ALARM);
       this.volume_notify = cv.getAsInteger(ProfileColumns.VOLUME_NOTIFY);
+      byte[] blob = cv.getAsByteArray(ProfileColumns.ICON);
+      if (blob != null) {
+        this.icon = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+      }
     }
     public ContentValues contentValues() {
       ContentValues cv = new ContentValues();
@@ -153,6 +171,11 @@ public class BragiDatabase {
       cv.put(ProfileColumns.VOLUME_SYSTEM, this.volume_system);
       cv.put(ProfileColumns.VOLUME_ALARM, this.volume_alarm);
       cv.put(ProfileColumns.VOLUME_NOTIFY, this.volume_notify);
+      if (this.icon != null) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        this.icon.compress(Bitmap.CompressFormat.PNG, 100, out);
+        cv.put(ProfileColumns.ICON, out.toByteArray());
+      }
       return cv;
     }
 
@@ -178,6 +201,7 @@ public class BragiDatabase {
       q = "CREATE TABLE " + ProfileColumns.TABLE_NAME + "( "
         + ProfileColumns._ID + " INTEGER PRIMARY KEY, "
         + ProfileColumns.NAME + " TEXT UNIQUE, "
+        + ProfileColumns.ICON + " BLOB, "
         + ProfileColumns.DEFAULT_RING + " TEXT, "
         + ProfileColumns.DEFAULT_NOTIFY + " TEXT, "
         + ProfileColumns.DEFAULT_ALARM + " TEXT, "
@@ -230,11 +254,15 @@ public class BragiDatabase {
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-       Log.w("Example", "Upgrading database, this will drop tables and recreate.");
-       db.execSQL("DROP TABLE IF EXISTS " + SlotColumns.TABLE_NAME);
-       db.execSQL("DROP TABLE IF EXISTS " + ProfileColumns.TABLE_NAME);
-       db.execSQL("DROP TABLE IF EXISTS " + ProfileSlotColumns.TABLE_NAME);
-       onCreate(db);
+      if (oldVersion >= 807) {
+        db.execSQL("ALTER TABLE "+ ProfileColumns.TABLE_NAME + " ADD COLUMN " + ProfileColumns.ICON + " blob");
+      }
+      else {
+        db.execSQL("DROP TABLE IF EXISTS " + SlotColumns.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ProfileColumns.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ProfileSlotColumns.TABLE_NAME);
+        onCreate(db);
+      }
     }
   }
 
