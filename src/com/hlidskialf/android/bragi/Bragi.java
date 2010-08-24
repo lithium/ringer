@@ -22,6 +22,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import org.json.JSONObject;
 
 
 import java.io.FileInputStream;
@@ -292,6 +293,38 @@ public class Bragi
     Matrix matrix = new Matrix();
     matrix.postScale(scale_width, scale_height);
     return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
+  }
+
+  public static String serializeToJSON(Context context)
+  {
+  /*
+  ({
+    'db_version': '901',
+    'slots': [{'name':'Email','slug':'email'},{'name':'IM','slug':'im'}],
+    'profiles': [
+        {
+            'name': 'Home',
+            'icon': '***BASE64 OF BITMAP DATA***',
+            'silent_mode': '',
+            'volume_ringer': '',
+            'default_ring': 'URI',
+            'slots': {
+                'email': 'URI',
+                'im': 'URI'
+            }
+        }
+    ]
+    'preferences': {
+        'active_profile': '-1',
+        'seen_tutorial': true,
+        'circle_crop': false
+    }
+  })
+  */
+    mDb = new BragiDatabase(mContext);
+    JSONObject top = new JSONObject();
+    top.put("db_version", BragiDatabase.DATABASE_VERSION);
+    return top.toString();
   }
 
 }
