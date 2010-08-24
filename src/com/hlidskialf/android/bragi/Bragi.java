@@ -255,27 +255,30 @@ public class Bragi
   }
   public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) 
   {
+    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bragi_appwidget);
+    BragiDatabase.ProfileModel profile = null;
     SharedPreferences prefs = context.getSharedPreferences(Bragi.PREFERENCES, 0);
     long profile_id = prefs.getLong(Bragi.PREF_ACTIVE_PROFILE, -1);
-    BragiDatabase mDb = new BragiDatabase(context);
-    BragiDatabase.ProfileModel profile = mDb.getProfile(profile_id, false);
-    mDb = null;
 
-    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bragi_appwidget);
+    if (profile_id != -1) {
+      BragiDatabase mDb = new BragiDatabase(context);
+      profile = mDb.getProfile(profile_id, false);
+      mDb = null;
+    }
 
     Intent intent = new Intent(Bragi.ACTION_CHOOSE_PROFILE);
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
     views.setOnClickPendingIntent(android.R.id.icon1, pendingIntent);
     views.setOnClickPendingIntent(android.R.id.text1, pendingIntent);
 
-    if (profile.icon != null) {
+    if (profile != null && profile.icon != null) {
       views.setImageViewBitmap(android.R.id.icon1, profile.icon);
     }
     else {
       views.setImageViewResource(android.R.id.icon1, R.drawable.ic_launcher_ringer);
     }
 
-    views.setTextViewText(android.R.id.text1, profile.name);
+    views.setTextViewText(android.R.id.text1, profile == null ? context.getString(R.string.bragi_label) : profile.name);
 
     appWidgetManager.updateAppWidget(appWidgetIds, views);
   }
