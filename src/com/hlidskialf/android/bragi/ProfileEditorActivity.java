@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
+import com.hlidskialf.android.preference.ImagePreference;
 
 
 public class ProfileEditorActivity extends PreferenceActivity
@@ -32,6 +33,8 @@ public class ProfileEditorActivity extends PreferenceActivity
     private String[] mNames_onoffsilent;
     private BragiDatabase mDbHelper;
     private String[] mNames_silentmode;
+    public boolean mUseCircleCrop = false;
+    private ImagePreference mIconPref;
 
 
     public static final int RESULT_VOLUME_SCREEN=1;
@@ -39,7 +42,7 @@ public class ProfileEditorActivity extends PreferenceActivity
     public static final int RESULT_ICON_SCREEN=3;
 
 
-    public boolean mUseCircleCrop = false;
+
 
 
     @Override
@@ -100,6 +103,9 @@ public class ProfileEditorActivity extends PreferenceActivity
         TextView tv;
         tv = (TextView)findViewById(R.id.actionbar_subtitle);
         tv.setText(getString(R.string.activity_profileeditor)+" - "+mProfile.name);
+
+        mIconPref = (ImagePreference)screen.findPreference("icon_screen");
+        mIconPref.setBitmap(mProfile.icon);
 
         
     }
@@ -194,6 +200,7 @@ public class ProfileEditorActivity extends PreferenceActivity
         if (requestCode == RESULT_ICON_SCREEN) {
           Bitmap crop_data = (Bitmap)data.getParcelableExtra("data");
           mProfile.icon = Bragi.scaleBitmap(crop_data, 72, 72);
+          mIconPref.setBitmap(mProfile.icon);
         }
 
       }

@@ -80,6 +80,7 @@ public class BragiActivity extends ListActivity
               edit_profile(0,profile_id);
             }
           });
+          holder.text.setChecked(profile_id == mActiveProfileId);
 
           final byte[] blob = cursor.getBlob(mColIdx_icon);
           if (blob != null) {
@@ -92,6 +93,7 @@ public class BragiActivity extends ListActivity
 
           final String name = cursor.getString(mColIdx_name);
           holder.text.setText(name);
+
 
         }
         public View newView(Context context, Cursor cursor, ViewGroup parent)

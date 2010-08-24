@@ -6,9 +6,10 @@
       android:title="@string/profile_editor_name"
       />
 
-    <PreferenceScreen android:key="icon_screen"
+    <com.hlidskialf.android.preference.ImagePreference android:key="icon_screen"
       android:persistent="false"
       android:title="@string/profile_editor_icon"
+      android:widgetLayout="@layout/image_preference_widget"
       />
 
     <ListPreference android:key="silent_mode"
