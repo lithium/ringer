@@ -32,6 +32,7 @@ public class Bragi
 {
   public static final String PACKAGE="com.hlidskialf.android.bragi";
 
+
   public static final String PREFERENCES=PACKAGE+"_preferences";
   public static final String PREF_ACTIVE_PROFILE="active_profile";
   public static final long PREF_ACTIVE_PROFILE_DEFAULT=-1;
@@ -48,6 +49,7 @@ public class Bragi
   public static final String EXTRA_PROFILE_VALUES=PACKAGE+".extra.PROFILE_VALUES";
   public static final String EXTRA_SHOW_BRAGI_SLOTS=PACKAGE+".extra.SHOW_BRAGI_SLOTS";
 
+  public static final String ACTION_CHOOSE_PROFILE = PACKAGE+".action.CHOOSE_PROFILE";
 
   public static Uri getUriForSlot(String slot_slug)
   {
@@ -59,7 +61,7 @@ public class Bragi
 
 
 
-  private static class ActiveProfileTask extends AsyncTask<Void, Void, Boolean>
+  public static class ActivateProfileTask extends AsyncTask<Void, Void, Boolean>
   {
     private Context mContext;
     private ContentResolver mResolver;
@@ -69,12 +71,22 @@ public class Bragi
     private ProgressDialog mDialog;
     private int mMaxSlotSize;
     private boolean mClearSlots;
+    private CompleteListener mCompleteListener;
 
-    public ActiveProfileTask(Context context, ContentResolver resolver, long profile_id)
+    public interface CompleteListener {
+      public void onComplete(boolean result);
+    }
+
+    public ActivateProfileTask(Context context, ContentResolver resolver, long profile_id)
     {
       mContext = context; 
       mProfileId = profile_id;
       mResolver = resolver;
+    }
+
+    public void setCompleteListener(CompleteListener listen)
+    {
+      mCompleteListener = listen;
     }
 
     protected void onPreExecute() {
@@ -101,6 +113,9 @@ public class Bragi
     }
 
     protected void onPostExecute(Boolean result) { 
+      if (mCompleteListener != null) {
+        mCompleteListener.onComplete(result);
+      }
       mDialog.dismiss();
       mDb.close();
     }
@@ -219,7 +234,12 @@ public class Bragi
 
   public static void activateProfile(Context context, ContentResolver resolver, long profile_id)
   {
-    ActiveProfileTask task = new ActiveProfileTask(context,resolver,profile_id);
+    activateProfile(context, resolver, profile_id, null);
+  }
+  public static void activateProfile(Context context, ContentResolver resolver, long profile_id, ActivateProfileTask.CompleteListener listen)
+  {
+    ActivateProfileTask task = new ActivateProfileTask(context,resolver,profile_id);
+    task.setCompleteListener(listen);
     task.execute();
 
     SharedPreferences prefs = context.getSharedPreferences(Bragi.PREFERENCES, 0);
@@ -243,9 +263,11 @@ public class Bragi
 
     RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bragi_appwidget);
 
-    Intent intent = new Intent(context, BragiActivity.class);
+    Intent intent = new Intent(Bragi.ACTION_CHOOSE_PROFILE);
     PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
     views.setOnClickPendingIntent(android.R.id.icon1, pendingIntent);
+    views.setOnClickPendingIntent(android.R.id.text1, pendingIntent);
+
     if (profile.icon != null) {
       views.setImageViewBitmap(android.R.id.icon1, profile.icon);
     }

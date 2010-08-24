@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.hlidskialf.android.bragi"
-      android:versionCode="000809"
-      android:versionName="0.8.9">
+      android:versionCode="000810"
+      android:versionName="0.8.10">
 
     <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
@@ -28,6 +28,15 @@
           <meta-data android:name="android.appwidget.provider"
                      android:resource="@xml/bragi_appwidget_provider" />
         </receiver>
+
+        <!-- chooser -->
+        <activity android:name="com.hlidskialf.android.bragi.BragiChooserActivity"
+                  android:theme="@style/Theme.Dialog.NoTitleBar">
+            <intent-filter>
+                <action android:name="com.hlidskialf.android.bragi.action.CHOOSE_PROFILE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
 
         <!-- internal activities -->
