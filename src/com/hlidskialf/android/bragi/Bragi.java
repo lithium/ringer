@@ -2,9 +2,13 @@
 package com.hlidskialf.android.bragi;
 
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.appwidget.AppWidgetManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,6 +20,9 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.RemoteViews;
+
+
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -203,6 +210,8 @@ public class Bragi
       }
       slots.close();
 
+      Bragi.updateWidget(mContext);
+
     
       return true;
     }
@@ -218,6 +227,37 @@ public class Bragi
 
   }
 
+  public static void updateWidget(Context context) 
+  {
+    AppWidgetManager awm = AppWidgetManager.getInstance(context);
+    int[] ids = awm.getAppWidgetIds(new ComponentName(context, BragiWidgetProvider.class));
+    Bragi.updateWidget(context, awm, ids);
+  }
+  public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) 
+  {
+    SharedPreferences prefs = context.getSharedPreferences(Bragi.PREFERENCES, 0);
+    long profile_id = prefs.getLong(Bragi.PREF_ACTIVE_PROFILE, -1);
+    BragiDatabase mDb = new BragiDatabase(context);
+    BragiDatabase.ProfileModel profile = mDb.getProfile(profile_id, false);
+    mDb = null;
+
+    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bragi_appwidget);
+
+    Intent intent = new Intent(context, BragiActivity.class);
+    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+    views.setOnClickPendingIntent(android.R.id.icon1, pendingIntent);
+    if (profile.icon != null) {
+      views.setImageViewBitmap(android.R.id.icon1, profile.icon);
+    }
+    else {
+      views.setImageViewResource(android.R.id.icon1, R.drawable.ic_launcher_ringer);
+    }
+
+    views.setTextViewText(android.R.id.text1, profile.name);
+
+    appWidgetManager.updateAppWidget(appWidgetIds, views);
+  }
+
 
   public static Bitmap scaleBitmap(Bitmap src, int new_width, int new_height) {
     int width = src.getWidth();
@@ -228,4 +268,5 @@ public class Bragi
     matrix.postScale(scale_width, scale_height);
     return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
   }
+
 }

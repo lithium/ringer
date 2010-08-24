@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.hlidskialf.android.bragi"
-      android:versionCode="000807"
-      android:versionName="0.8.7">
+      android:versionCode="000809"
+      android:versionName="0.8.9">
 
     <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
@@ -10,6 +10,7 @@
     <application android:label="@string/bragi_label"
                  android:icon="@drawable/ic_launcher_ringer">
 
+        <!-- launcher activity -->
         <activity android:name="com.hlidskialf.android.bragi.BragiActivity"
                   android:theme="@android:style/Theme.NoTitleBar"
                   android:label="@string/bragi_label">
@@ -19,20 +20,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.hlidskialf.android.tonepicker.TonePicker"
-                  android:theme="@android:style/Theme.NoTitleBar"
-                  android:label="@string/tonepicker_label"
-                  >
-            <intent-filter>
-                <action android:name="android.intent.action.RINGTONE_PICKER" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <!-- widget -->
+        <receiver android:name="BragiWidgetProvider">
+          <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+          </intent-filter>
+          <meta-data android:name="android.appwidget.provider"
+                     android:resource="@xml/bragi_appwidget_provider" />
+        </receiver>
 
-        <activity android:name="com.hlidskialf.android.tonepicker.OtherIntentPicker"
-                  android:theme="@android:style/Theme.NoTitleBar"
-                  />
 
+        <!-- internal activities -->
         <activity android:name="com.hlidskialf.android.bragi.SlotEditorActivity" 
                   android:theme="@android:style/Theme.NoTitleBar"/>
 
@@ -48,5 +46,23 @@
 
         <activity android:name="com.hlidskialf.android.bragi.BragiTutorialActivity" 
                   android:theme="@style/Theme.Dialog.NoTitleBar"/>
+
+
+        <!-- tonepicker intents -->
+        <activity android:name="com.hlidskialf.android.tonepicker.TonePicker"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                  android:label="@string/tonepicker_label"
+                  >
+            <intent-filter>
+                <action android:name="android.intent.action.RINGTONE_PICKER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.hlidskialf.android.tonepicker.OtherIntentPicker"
+                  android:theme="@android:style/Theme.NoTitleBar"
+                  />
+
+
     </application>
 </manifest> 
