@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.hlidskialf.android.bragi"
-      android:versionCode="000901"
-      android:versionName="0.9.1">
+      android:versionCode="000903"
+      android:versionName="0.9.3">
 
     <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application android:label="@string/bragi_label"
                  android:icon="@drawable/ic_launcher_ringer">

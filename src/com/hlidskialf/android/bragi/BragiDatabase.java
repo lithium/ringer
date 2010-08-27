@@ -22,7 +22,7 @@ import java.io.ByteArrayOutputStream;
 
 public class BragiDatabase {
   private static final String DATABASE_NAME = "bragi.db";
-  private static final int DATABASE_VERSION = 807;
+  public static final int DATABASE_VERSION = 807;
 
   public static final String AUTHORITY = "com.hlidskialf.android.provider.bragi";
 
@@ -95,6 +95,7 @@ public class BragiDatabase {
   public static final class ProfileModel {
     public long id = -1;
     public String name;
+    public byte[] icon_blob;
     public Bitmap icon;
     public String default_ring;
     public String default_notify;
@@ -130,9 +131,9 @@ public class BragiDatabase {
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_ALARM)) != -1) this.volume_alarm = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.VOLUME_NOTIFY)) != -1) this.volume_notify = c.getInt(idx);
       if ((idx = c.getColumnIndex(ProfileColumns.ICON)) != -1) {
-        byte[] blob = c.getBlob(idx);
-        if (blob != null) {
-          this.icon = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+        this.icon_blob = c.getBlob(idx);
+        if (this.icon_blob != null) {
+          this.icon = BitmapFactory.decodeByteArray(this.icon_blob, 0, this.icon_blob.length);
         }
       }
     }
@@ -150,9 +151,9 @@ public class BragiDatabase {
       this.volume_system = cv.getAsInteger(ProfileColumns.VOLUME_SYSTEM);
       this.volume_alarm = cv.getAsInteger(ProfileColumns.VOLUME_ALARM);
       this.volume_notify = cv.getAsInteger(ProfileColumns.VOLUME_NOTIFY);
-      byte[] blob = cv.getAsByteArray(ProfileColumns.ICON);
-      if (blob != null) {
-        this.icon = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+      this.icon_blob = cv.getAsByteArray(ProfileColumns.ICON);
+      if (this.icon_blob != null) {
+        this.icon = BitmapFactory.decodeByteArray(this.icon_blob, 0, this.icon_blob.length);
       }
     }
     public ContentValues contentValues() {
@@ -254,7 +255,7 @@ public class BragiDatabase {
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-      if (oldVersion >= 807) {
+      if (oldVersion < 807 && newVersion >= 807) {
         db.execSQL("ALTER TABLE "+ ProfileColumns.TABLE_NAME + " ADD COLUMN " + ProfileColumns.ICON + " blob");
       }
       else {
@@ -293,9 +294,15 @@ public class BragiDatabase {
   }
 
   public long addSlot(String name) {
+    return addSlot(name,null);
+  }
+  public long addSlot(String name, String slug) {
     SQLiteDatabase db = mOpenHelper.getWritableDatabase();
     ContentValues cv = new ContentValues();
-    cv.put(SlotColumns.SLUG, _slugify(name));
+    if (slug == null) {
+      slug = _slugify(name);
+    }
+    cv.put(SlotColumns.SLUG, slug);
     cv.put(SlotColumns.NAME, name);
     long id = -1;
     try {
@@ -323,6 +330,15 @@ public class BragiDatabase {
     return (ret > 0);
   }
 
+
+  public void deleteAllData()
+  {
+    SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+    db.delete(BragiDatabase.ProfileSlotColumns.TABLE_NAME, null, null);
+    db.delete(BragiDatabase.ProfileColumns.TABLE_NAME, null, null);
+    db.delete(BragiDatabase.SlotColumns.TABLE_NAME, null, null);
+    db.close();
+  }
 
 
   public ProfileModel getProfile(long profile_id, boolean hash_slots) 

@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -23,11 +24,17 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import my.android.util.Base64;
 
 public class Bragi 
 {
@@ -40,7 +47,7 @@ public class Bragi
   public static final String PREF_SEEN_TUTORIAL="seen_tutorial";
   public static final boolean PREF_SEEN_TUTORIAL_DEFAULT=false;
   public static final String PREF_MAX_SLOT_SIZE="max_slot_size";
-  public static final int PREF_MAX_SLOT_SIZE_DEFAULT=2;
+  public static final int PREF_MAX_SLOT_SIZE_DEFAULT=2096;
   public static final String PREF_CLEAR_SLOTS="clear_slots";
   public static final boolean PREF_CLEAR_SLOTS_DEFAULT=true;
   public static final String PREF_CIRCLE_CROP="circle_crop";
@@ -295,6 +302,103 @@ public class Bragi
     return Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
   }
 
+  public static boolean unserializeFromJSON(Context context, String json_data)
+  {
+    boolean ret = false;
+    BragiDatabase db = new BragiDatabase(context);
+    int i;
+    int N;
+    HashMap<String,Long> slot_hash = new HashMap<String,Long>();
+
+    try {
+      JSONObject top = new JSONObject(json_data);
+
+      // flush old data
+      db.deleteAllData();
+
+      // restore slots
+      JSONArray slots = top.getJSONArray("slots");
+      N = slots.length();
+      for (i=0; i < N; i++) {
+        JSONObject obj = slots.getJSONObject(i);
+        String name = obj.getString("name");
+        String slug = obj.getString("slug");
+        long slot_id = db.addSlot(name, slug);
+        slot_hash.put(slug, slot_id);
+      }
+
+     
+      JSONArray profiles = top.getJSONArray("profiles");
+      N = profiles.length();
+      for (i=0; i < N; i++) {
+        JSONObject obj = profiles.getJSONObject(i);
+        String name = obj.getString(BragiDatabase.ProfileColumns.NAME);
+
+        BragiDatabase.ProfileModel profile = new BragiDatabase.ProfileModel();
+        profile.id = db.addProfile(name);
+        profile.name = name;
+        profile.default_ring = obj.optString(BragiDatabase.ProfileColumns.DEFAULT_RING);
+        profile.default_notify = obj.optString(BragiDatabase.ProfileColumns.DEFAULT_NOTIFY);
+        profile.default_alarm = obj.optString(BragiDatabase.ProfileColumns.DEFAULT_ALARM);
+        profile.silent_mode = obj.optInt(BragiDatabase.ProfileColumns.SILENT_MODE);
+        profile.vibrate_ring = obj.optInt(BragiDatabase.ProfileColumns.VIBRATE_RING);
+        profile.vibrate_notify = obj.optInt(BragiDatabase.ProfileColumns.VIBRATE_NOTIFY);
+        profile.volume_ringer = obj.optInt(BragiDatabase.ProfileColumns.VOLUME_RINGER);
+        profile.volume_music = obj.optInt(BragiDatabase.ProfileColumns.VOLUME_MUSIC);
+        profile.volume_call = obj.optInt(BragiDatabase.ProfileColumns.VOLUME_CALL);
+        profile.volume_system = obj.optInt(BragiDatabase.ProfileColumns.VOLUME_SYSTEM);
+        profile.volume_alarm = obj.optInt(BragiDatabase.ProfileColumns.VOLUME_ALARM);
+        profile.volume_notify = obj.optInt(BragiDatabase.ProfileColumns.VOLUME_NOTIFY);
+        ContentValues values = profile.contentValues();
+
+        String icon_b64 = obj.optString(BragiDatabase.ProfileColumns.ICON);
+        if (icon_b64 != null && icon_b64.length() > 0) {
+          byte[] icon_data = Base64.decode(icon_b64, Base64.DEFAULT);
+          values.put(BragiDatabase.ProfileColumns.ICON, icon_data);
+        }
+        
+        db.updateProfile(profile.id, values);
+
+        JSONObject profile_slots = obj.getJSONObject("slots");
+        Iterator it = profile_slots.keys();
+        while (it.hasNext()) {
+          String slot = (String)it.next();
+          if (!slot_hash.containsKey(slot)) 
+            continue;
+          long slot_id = slot_hash.get(slot);
+          String uri = profile_slots.getString(slot);
+
+          db.updateProfileSlot(profile.id, slot_id, Uri.parse(uri));
+        }
+      }
+
+
+      JSONObject preferences = top.getJSONObject("preferences");
+      SharedPreferences prefs = context.getSharedPreferences(Bragi.PREFERENCES, 0);
+      SharedPreferences.Editor edit = prefs.edit();
+
+      boolean seen_tutorial = Boolean.valueOf( preferences.getString(Bragi.PREF_SEEN_TUTORIAL) );
+      edit.putBoolean(Bragi.PREF_SEEN_TUTORIAL, seen_tutorial);
+
+      int max_slot_size = Integer.valueOf( preferences.getString(Bragi.PREF_MAX_SLOT_SIZE) );
+      edit.putInt(Bragi.PREF_MAX_SLOT_SIZE, max_slot_size);
+
+      boolean clear_slots = Boolean.valueOf( preferences.getString(Bragi.PREF_CLEAR_SLOTS) );
+      edit.putBoolean(Bragi.PREF_CLEAR_SLOTS, clear_slots);
+
+      boolean circle_crop = Boolean.valueOf( preferences.getString(Bragi.PREF_CIRCLE_CROP) );
+      edit.putBoolean(Bragi.PREF_CIRCLE_CROP, circle_crop);
+
+
+      ret = true;
+    } catch (JSONException e) {
+      Log.v("BragiRestore", e.toString());
+      ret = false;
+    }
+    db.close();
+    return ret;
+  }
+
   public static String serializeToJSON(Context context)
   {
   /*
@@ -321,10 +425,87 @@ public class Bragi
     }
   })
   */
-    mDb = new BragiDatabase(mContext);
-    JSONObject top = new JSONObject();
-    top.put("db_version", BragiDatabase.DATABASE_VERSION);
-    return top.toString();
+    BragiDatabase db = new BragiDatabase(context);
+    String ret = "";
+    try {
+      HashMap<Long,String> slot_hash = new HashMap<Long,String>();
+
+      JSONObject top = new JSONObject();
+      top.put("db_version", BragiDatabase.DATABASE_VERSION);
+
+      Cursor slot_cursor = db.getAllSlots();
+      final int cidx_name = slot_cursor.getColumnIndex(BragiDatabase.SlotColumns.NAME);
+      final int cidx_slug = slot_cursor.getColumnIndex(BragiDatabase.SlotColumns.SLUG);
+      final int cidx_id = slot_cursor.getColumnIndex(BragiDatabase.SlotColumns.SLUG);
+      JSONArray slots = new JSONArray();
+      while (slot_cursor.moveToNext()) {
+        JSONObject obj = new JSONObject();
+        String slug = slot_cursor.getString(cidx_slug); 
+        obj.put(BragiDatabase.SlotColumns.NAME, slot_cursor.getString(cidx_name));
+        obj.put(BragiDatabase.SlotColumns.SLUG, slug);
+        slots.put(obj);
+
+        slot_hash.put(slot_cursor.getLong(cidx_id),slug);
+      }
+      slot_cursor.close();
+      top.put("slots", slots);
+
+      Cursor profile_cursor = db.getAllProfiles();
+      JSONArray profiles = new JSONArray();
+      while (profile_cursor.moveToNext()) {
+        JSONObject obj = new JSONObject();
+        BragiDatabase.ProfileModel profile = new BragiDatabase.ProfileModel(profile_cursor);
+        obj.put(BragiDatabase.ProfileColumns.NAME, profile.name);
+        obj.put(BragiDatabase.ProfileColumns.DEFAULT_RING, profile.default_ring);
+        obj.put(BragiDatabase.ProfileColumns.DEFAULT_NOTIFY, profile.default_notify);
+        obj.put(BragiDatabase.ProfileColumns.DEFAULT_ALARM, profile.default_alarm);
+        obj.put(BragiDatabase.ProfileColumns.SILENT_MODE, profile.silent_mode);
+        obj.put(BragiDatabase.ProfileColumns.VIBRATE_RING, profile.vibrate_ring);
+        obj.put(BragiDatabase.ProfileColumns.VIBRATE_NOTIFY, profile.vibrate_notify);
+        obj.put(BragiDatabase.ProfileColumns.VOLUME_RINGER, profile.volume_ringer);
+        obj.put(BragiDatabase.ProfileColumns.VOLUME_MUSIC, profile.volume_music);
+        obj.put(BragiDatabase.ProfileColumns.VOLUME_CALL, profile.volume_call);
+        obj.put(BragiDatabase.ProfileColumns.VOLUME_SYSTEM, profile.volume_system);
+        obj.put(BragiDatabase.ProfileColumns.VOLUME_ALARM, profile.volume_alarm);
+        obj.put(BragiDatabase.ProfileColumns.VOLUME_NOTIFY, profile.volume_notify);
+        if (profile.icon_blob != null) {
+          String base64 = Base64.encodeToString(profile.icon_blob, Base64.DEFAULT);
+          obj.put(BragiDatabase.ProfileColumns.ICON, base64);
+        }
+
+        Cursor profile_slot_cursor = db.getProfileSlots(profile.id);
+        JSONObject profile_slots = new JSONObject();
+        final int cidx_uri = profile_slot_cursor.getColumnIndex(BragiDatabase.ProfileSlotColumns.URI);
+        final int cidx_slot_id = profile_slot_cursor.getColumnIndex(BragiDatabase.ProfileSlotColumns.SLOT_ID);
+        while (profile_slot_cursor.moveToNext()) {
+          String uri = profile_slot_cursor.getString(cidx_uri);
+          long slot_id = profile_slot_cursor.getLong(cidx_slot_id);
+          if (slot_hash.containsKey(slot_id))
+            profile_slots.put(slot_hash.get(slot_id), uri);
+        }
+        profile_slot_cursor.close();
+        obj.put("slots", profile_slots);
+
+        profiles.put(obj);
+      }
+      profile_cursor.close();
+      top.put("profiles", profiles);
+
+      SharedPreferences prefs = context.getSharedPreferences(Bragi.PREFERENCES, 0);
+      Map pref_map = prefs.getAll();
+      JSONObject pref_obj = new JSONObject();
+      Iterator it = pref_map.entrySet().iterator();
+      while (it.hasNext()) {
+        Map.Entry entry = (Map.Entry)it.next();
+        pref_obj.put((String)entry.getKey(), entry.getValue().toString());
+      }
+      top.put("preferences", pref_obj);
+
+      ret = top.toString();
+    } catch (JSONException e) {
+    }
+    db.close();
+    return ret;
   }
 
 }

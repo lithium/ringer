@@ -71,24 +71,42 @@
     <string name="activate_dialog_title">Activating profile</string>
     <string name="activate_dialog_message">Activating the \'%s\' profile...</string>
 
+    <!-- backup/restore dialogs -->
+    <string name="backup_dialog_message">Backing up to sd-card...</string>
+    <string name="backup_success">Backup successful!</string>
+    <string name="backup_failure">Backup failed...</string>
+    <string name="restore_dialog_message">Restoring from to sd-card...</string>
+    <string name="restore_success">Restore successful!</string>
+    <string name="restore_failure">Restore failed...</string>
+    <string name="confirm_backup_dialog_title">Backup to SD-Card</string>
+    <string name="confirm_backup_dialog_message">This will overwrite any previous sd-card backup.\nAre you sure you want to proceed?</string>
+    <string name="confirm_restore_dialog_title">Restore from SD-Card</string>
+    <string name="confirm_restore_dialog_message">This will ERASE your current settings.\nAre you sure you want to restore?</string>
+
     <!-- confirm delete dialog -->
     <string name="confirm_delete_profile_dialog_title">Delete profile?</string>
     <string name="confirm_delete_profile_dialog_message">Are you sure you want to delete the \'%s\' profile?</string>
     <string name="confirm_delete_slot_dialog_title">Delete slot?</string>
     <string name="confirm_delete_slot_dialog_message">Are you sure you want to delete the \'%s\' slot?</string>
 
+
     <!-- app preferences -->
     <string name="preference_clear_slots_title">Erase Slots If Empty</string>
     <string name="preference_clear_slots_summary">Erase the previous slot when changing profile</string>
     <string name="preference_max_slot_size_title">Max Slot Size</string>
-    <string name="preference_max_slot_size_summary">Maximum size in MB per ringtone to cache</string>
+    <string name="preference_max_slot_size_summary">Maximum size in KB per ringtone to cache</string>
     <string name="preference_circle_crop_title">Circular Icon Crop</string>
-    <string name="preference_circle_crop_summary">Use a circle when cropping iamges for icons</string>
+    <string name="preference_circle_crop_summary">Use a circle when cropping images for icons</string>
     <string name="preference_help_category">Help</string>
     <string name="preference_show_tutorial_title">Show Tutorial</string>
     <string name="preference_show_tutorial_summary">Show the Getting Started tutorial again</string>
     <string name="preference_about_title">About</string>
     <string name="preference_about_summary">About ringer</string>
+    <string name="preference_backup_category">Backup &amp; Restore</string>
+    <string name="preference_backup_title">Backup</string>
+    <string name="preference_backup_summary">Backup configuration to sd-card</string>
+    <string name="preference_restore_title">Restore</string>
+    <string name="preference_restore_summary">Restore configuration from sd-card</string>
 
     <!-- about dialog -->
     <string name="about_dialog_title">About Ringer</string>

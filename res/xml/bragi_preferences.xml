@@ -30,4 +30,16 @@
       android:persistent="false"
       />
   </PreferenceCategory>
+  <PreferenceCategory android:title="@string/preference_backup_category">
+    <PreferenceScreen android:key="screen_backup"
+      android:title="@string/preference_backup_title"
+      android:summary="@string/preference_backup_summary"
+      android:persistent="false"
+      />
+    <PreferenceScreen android:key="screen_restore"
+      android:title="@string/preference_restore_title"
+      android:summary="@string/preference_restore_summary"
+      android:persistent="false"
+      />
+  </PreferenceCategory>
 </PreferenceScreen>
