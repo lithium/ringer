@@ -38,6 +38,7 @@ public class BragiActivity extends ListActivity
     private long mActivePosition=-1;
     private long mConfirmDeleteId=-1;
     private boolean mShowTutorial;
+    private long mLastEditProfile=-1;
 
     private static final int MENU_ACTIVATE_ID=1;
     private static final int MENU_EDIT_ID=2;
@@ -314,6 +315,7 @@ public class BragiActivity extends ListActivity
 
     protected void edit_profile(int position, long id) 
     { 
+      mLastEditProfile = id;
       Intent intent = new Intent(this, ProfileEditorActivity.class);
       intent.putExtra(Bragi.EXTRA_PROFILE_ID, id);
       startActivityForResult(intent, RESULT_EDIT_PROFILE);
@@ -332,7 +334,14 @@ public class BragiActivity extends ListActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
     {
-        mProfileCursor.requery();
+      if (requestCode == RESULT_EDIT_PROFILE) {
+        if (mLastEditProfile == mActiveProfileId) {
+          Bragi.activateProfile(this, getContentResolver(), mLastEditProfile);
+        }
+        mLastEditProfile = -1;
+      }
+
+      mProfileCursor.requery();
     }
 
     @Override
